@@ -60,11 +60,11 @@ jobs:
         with:
           credentials_json: ${{ secrets.GOOGLE_KEY }}
       - name: Build Docker image
-        run: docker build . --file Dockerfile --tag image
+        run: docker build . --file Dockerfile --tag application-container
 
       - name: Push Docker image
         run: |
-          echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u flyingmonkeys1996 docker.io --password-stdin
+          echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u flyingmonkeys1996 --password-stdin
           IMAGE_ID=flyingmonkeys1996/collision-mapper/$IMAGE_NAME
           # Strip git ref prefix from version
           VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
