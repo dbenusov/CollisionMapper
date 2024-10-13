@@ -30,19 +30,19 @@ The codebase is tested with [JUnit](https://junit.org/) and uses [Gradle](https:
 1.  Run the servers locally using the below examples.
 
     ```bash
-    java -jar applications/basic-server/build/libs/basic-server-1.0-SNAPSHOT.jar
+    java -jar applications/basic-server/build/libs/basic-server.jar
     ```
 
     Data collector
 
     ```bash
-    java -jar applications/data-collector-server/build/libs/data-collector-server-1.0-SNAPSHOT.jar
+    java -jar applications/data-collector-server/build/libs/data-collector-server.jar
     ```
 
     Data analyzer
     
     ```bash
-    java -jar applications/data-analyzer-server/build/libs/data-analyzer-server-1.0-SNAPSHOT.jar
+    java -jar applications/data-analyzer-server/build/libs/data-analyzer-server.jar
     ```
     
 ## Running with Docker
