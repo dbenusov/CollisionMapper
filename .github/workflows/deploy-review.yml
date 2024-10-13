@@ -63,7 +63,6 @@ jobs:
         run: docker build . --file Dockerfile --tag image
 
       - name: Push Docker image
-        if: steps.docker-login.outcome == 'success'
         run: |
           echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u flyingmonkeys1996 --password-stdin
           IMAGE_ID=flyingmonkeys1996/collision-mapper/$IMAGE_NAME
