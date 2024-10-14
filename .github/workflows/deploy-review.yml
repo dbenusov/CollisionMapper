@@ -85,12 +85,14 @@ jobs:
         with:
           credentials_json: ${{ secrets.GOOGLE_KEY }}
       - id: 'deploy'
-        uses: 'google-github-actions/deploy-cloudrun@v2'
-        with:
-          service: 'basic-server'
-          image: 'docker.io/flyingmonkeys1996/collision-mapper:latest'
-          env_vars: |-
-            APP=opt/applications/basic-server.jar
+#        uses: 'google-github-actions/deploy-cloudrun@v2'
+#        with:
+#          service: 'basic-server'
+#          image: 'docker.io/flyingmonkeys1996/collision-mapper:latest'
+#          env_vars: |-
+#            APP=opt/applications/basic-server.jar
+        run: |-
+          gcloud run deploy basic-server --image docker.io/flyingmonkeys1996/collision-mapper:latest --update-env-vars ^,^APP=opt/applications/basic-server.jar --format json --region us-central1 --allow-unauthenticated
 
   deploy-data-analyzer-review:
     runs-on: ubuntu-latest
