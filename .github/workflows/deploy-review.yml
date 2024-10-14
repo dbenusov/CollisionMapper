@@ -5,7 +5,7 @@ on:
       - main
 
 env:
-  IMAGE_NAME: application-container
+  IMAGE_NAME: collision-mapper
 
 jobs:
   run-tests:
@@ -65,7 +65,7 @@ jobs:
       - name: Push Docker image
         run: |
           echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u flyingmonkeys1996 --password-stdin
-          IMAGE_ID=flyingmonkeys1996/collision-mapper/$IMAGE_NAME
+          IMAGE_ID=flyingmonkeys1996/$IMAGE_NAME
           # Strip git ref prefix from version
           VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
           # Strip "v" prefix from tag name
@@ -75,7 +75,7 @@ jobs:
           echo IMAGE_ID=$IMAGE_ID
           echo VERSION=$VERSION
 
-          docker tag image $IMAGE_ID:$VERSION
+          docker tag collision-mapper $IMAGE_ID:$VERSION
           docker push $IMAGE_ID:$VERSION
 
   basic-server-review:
