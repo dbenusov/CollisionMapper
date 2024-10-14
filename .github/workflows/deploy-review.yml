@@ -93,6 +93,7 @@ jobs:
 #          env_vars: |-
 #            APP=opt/applications/basic-server.jar
         run: |-
+          gcloud components install beta --quiet
           gcloud run deploy basic-server \
             --image=docker.io/flyingmonkeys1996/collision-mapper:latest \
             --allow-unauthenticated \
@@ -101,7 +102,6 @@ jobs:
             --set-env-vars='APP=opt/applications/basic-server.jar' \
             --region=us-central1 \
             --project=collision-mappter
-          gcloud components install beta
           gcloud beta run services add-iam-policy-binding --region=us-central1 --member=allUsers --role=roles/run.invoker basic-server
 
   deploy-data-analyzer-review:
