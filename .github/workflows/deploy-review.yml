@@ -148,10 +148,10 @@ jobs:
             --allow-unauthenticated \
             --port=8080 \
             --service-account=320300059816-compute@developer.gserviceaccount.com \
-            --set-env-vars='APP=opt/applications/data-collector.jar' \
+            --set-env-vars='APP=opt/applications/data-collector-server.jar' \
             --region=us-central1 \
             --project=collision-mappter
-          gcloud beta run services add-iam-policy-binding data-collector-server \
+          gcloud beta run services add-iam-policy-binding data-collector \
             --region=us-central1 \
             --member=allUsers \
             --role=roles/run.invoker \
