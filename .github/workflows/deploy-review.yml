@@ -90,7 +90,7 @@ jobs:
           service: 'basic-server'
           image: 'docker.io/flyingmonkeys1996/collision-mapper:latest'
           env_vars: |-
-            APP="opt/application/basic-server.jar"
+            APP=opt/applications/basic-server.jar
 
   deploy-data-analyzer-review:
     runs-on: ubuntu-latest
