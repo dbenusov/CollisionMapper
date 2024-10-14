@@ -102,7 +102,11 @@ jobs:
             --set-env-vars='APP=opt/applications/basic-server.jar' \
             --region=us-central1 \
             --project=collision-mappter
-          gcloud beta run services add-iam-policy-binding --region=us-central1 --member=allUsers --role=roles/run.invoker basic-server
+          gcloud beta run services add-iam-policy-binding basic-server \
+            --region=us-central1 \
+            --member=allUsers \
+            --role=roles/run.invoker \
+            --project=collision-mappter
 
   deploy-data-analyzer-review:
     runs-on: ubuntu-latest
