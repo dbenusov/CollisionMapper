@@ -60,7 +60,7 @@ jobs:
         with:
           credentials_json: ${{ secrets.GOOGLE_KEY }}
       - name: Build Docker image
-        run: docker build . --file Dockerfile --tag application-container
+        run: docker build . --file Dockerfile --tag collision-mapper
 
       - name: Push Docker image
         run: |
