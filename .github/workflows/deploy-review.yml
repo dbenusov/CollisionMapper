@@ -121,7 +121,20 @@ jobs:
       - id: 'gcloud'
         name: 'gcloud'
         run: |-
-          echo "gcloud authenticated"
+          gcloud components install beta --quiet
+          gcloud run deploy data-analyzer \
+            --image=docker.io/flyingmonkeys1996/collision-mapper:latest \
+            --allow-unauthenticated \
+            --port=8080 \
+            --service-account=320300059816-compute@developer.gserviceaccount.com \
+            --set-env-vars='APP=opt/applications/data-analyzer.jar' \
+            --region=us-central1 \
+            --project=collision-mappter
+          gcloud beta run services add-iam-policy-binding data-analyzer \
+            --region=us-central1 \
+            --member=allUsers \
+            --role=roles/run.invoker \
+            --project=collision-mappter
 
   data-collector-review:
     runs-on: ubuntu-latest
@@ -136,4 +149,17 @@ jobs:
       - id: 'gcloud'
         name: 'gcloud'
         run: |-
-          echo "gcloud authenticated"
+          gcloud components install beta --quiet
+          gcloud run deploy data-collector \
+            --image=docker.io/flyingmonkeys1996/collision-mapper:latest \
+            --allow-unauthenticated \
+            --port=8080 \
+            --service-account=320300059816-compute@developer.gserviceaccount.com \
+            --set-env-vars='APP=opt/applications/data-collector.jar' \
+            --region=us-central1 \
+            --project=collision-mappter
+          gcloud beta run services add-iam-policy-binding data-collector \
+            --region=us-central1 \
+            --member=allUsers \
+            --role=roles/run.invoker \
+            --project=collision-mappter
