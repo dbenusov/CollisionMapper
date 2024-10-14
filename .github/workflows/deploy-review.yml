@@ -43,7 +43,6 @@ jobs:
       id-token: 'write'
     steps:
       - uses: actions/checkout@v4
-      - uses: google-github-actions/setup-gcloud@v2
       - uses: actions/download-artifact@v4
         with:
           name: basic-server.jar
@@ -79,19 +78,13 @@ jobs:
     needs: [artifact-registry]
     steps:
       - uses: actions/checkout@v4
-      - uses: google-github-actions/setup-gcloud@v2
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v0.5.0
         with:
           credentials_json: ${{ secrets.GOOGLE_KEY }}
+      - uses: google-github-actions/setup-gcloud@v2
       - name: 'Deploy'
         id: 'deploy'
-#        uses: 'google-github-actions/deploy-cloudrun@v2'
-#        with:
-#          service: 'basic-server'
-#          image: 'docker.io/flyingmonkeys1996/collision-mapper:latest'
-#          env_vars: |-
-#            APP=opt/applications/basic-server.jar
         run: |-
           gcloud components install beta --quiet
           gcloud run deploy basic-server \
@@ -113,11 +106,11 @@ jobs:
     needs: [artifact-registry]
     steps:
       - uses: actions/checkout@v4
-      - uses: google-github-actions/setup-gcloud@v2
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v0.5.0
         with:
           credentials_json: ${{ secrets.GOOGLE_KEY }}
+      - uses: google-github-actions/setup-gcloud@v2
       - id: 'gcloud'
         name: 'gcloud'
         run: |-
@@ -127,7 +120,7 @@ jobs:
             --allow-unauthenticated \
             --port=8080 \
             --service-account=320300059816-compute@developer.gserviceaccount.com \
-            --set-env-vars='APP=opt/applications/data-analyzer.jar' \
+            --set-env-vars='APP=opt/applications/data-analyzer-server.jar' \
             --region=us-central1 \
             --project=collision-mappter
           gcloud beta run services add-iam-policy-binding data-analyzer \
@@ -141,11 +134,11 @@ jobs:
     needs: [artifact-registry]
     steps:
       - uses: actions/checkout@v4
-      - uses: google-github-actions/setup-gcloud@v2
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v0.5.0
         with:
           credentials_json: ${{ secrets.GOOGLE_KEY }}
+      - uses: google-github-actions/setup-gcloud@v2
       - id: 'gcloud'
         name: 'gcloud'
         run: |-
@@ -158,7 +151,7 @@ jobs:
             --set-env-vars='APP=opt/applications/data-collector.jar' \
             --region=us-central1 \
             --project=collision-mappter
-          gcloud beta run services add-iam-policy-binding data-collector \
+          gcloud beta run services add-iam-policy-binding data-collector-server \
             --region=us-central1 \
             --member=allUsers \
             --role=roles/run.invoker \
