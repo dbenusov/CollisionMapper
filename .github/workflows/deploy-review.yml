@@ -6,6 +6,7 @@ on:
 
 env:
   IMAGE_NAME: collision-mapper
+  DOCKER_USERNAME: flyingmonkeys1996
 
 jobs:
   run-tests:
@@ -60,22 +61,22 @@ jobs:
         with:
           credentials_json: ${{ secrets.GOOGLE_KEY }}
       - name: Build Docker image
-        run: docker build . --file Dockerfile --tag collision-mapper
+        run: docker build . --file Dockerfile --tag image
 
       - name: Push Docker image
         run: |
-          echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u flyingmonkeys1996 --password-stdin
-          IMAGE_ID=flyingmonkeys1996/$IMAGE_NAME
+          echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u $DOCKER_USERNAME --password-stdin
+          IMAGE_ID=$DOCKER_USERNAME/$IMAGE_NAME
           # Strip git ref prefix from version
           VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
           # Strip "v" prefix from tag name
           [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
           # Use Docker `latest` tag convention
-          [ "$VERSION" == "master" ] && VERSION=latest
+          [ "$VERSION" == "main" ] && VERSION=latest
           echo IMAGE_ID=$IMAGE_ID
           echo VERSION=$VERSION
 
-          docker tag collision-mapper $IMAGE_ID:$VERSION
+          docker tag image $IMAGE_ID:$VERSION
           docker push $IMAGE_ID:$VERSION
 
   basic-server-review:
