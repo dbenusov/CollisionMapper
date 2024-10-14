@@ -92,7 +92,14 @@ jobs:
 #          env_vars: |-
 #            APP=opt/applications/basic-server.jar
         run: |-
-          gcloud run deploy basic-server --image docker.io/flyingmonkeys1996/collision-mapper:latest --update-env-vars ^,^APP=opt/applications/basic-server.jar --format json --region us-central1 --allow-unauthenticated
+          gcloud run deploy basic-server \
+            --image=docker.io/flyingmonkeys1996/collision-mapper:latest \
+            --allow-unauthenticated \
+            --port=8080 \
+            --service-account=320300059816-compute@developer.gserviceaccount.com \
+            --set-env-vars='APP=opt/applications/basic-server.jar' \
+            --region=us-central1 \
+            --project=collision-mappter
 
   deploy-data-analyzer-review:
     runs-on: ubuntu-latest
