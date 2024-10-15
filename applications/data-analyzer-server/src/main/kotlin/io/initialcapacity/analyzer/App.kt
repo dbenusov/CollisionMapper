@@ -17,6 +17,10 @@ fun Application.module() {
         get("/") {
             call.respondText("hi!", ContentType.Text.Html)
         }
+
+        get("/ping") {
+            call.respondText("Data Analyzer Responding!", ContentType.Text.Plain)
+        }
     }
     val scheduler = WorkScheduler<ExampleTask>(ExampleWorkFinder(), mutableListOf(ExampleWorker()), 30)
     scheduler.start()

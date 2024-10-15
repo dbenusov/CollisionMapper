@@ -14,6 +14,8 @@ ENV JAVA_HOME=/opt/java/openjdk
 ENV PATH "${JAVA_HOME}/bin:${PATH}"
 ENV PORT=8888
 ENV APP="/opt/applications/basic-server.jar"
+ENV PROJECT_NUMBER="320300059816"
+ENV PROJECT_REGION="us-central1"
 
 RUN mkdir /opt/applications
 COPY applications/basic-server/build/libs/basic-server.jar /opt/applications/

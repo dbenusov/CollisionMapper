@@ -11,6 +11,7 @@ dependencies {
     implementation(project(":support:logging-support"))
     implementation(project(":support:workflow-support"))
 
+    implementation("io.ktor:ktor-server-cors:$ktorVersion")
     implementation("io.ktor:ktor-server-core-jvm:$ktorVersion")
     implementation("io.ktor:ktor-server-freemarker-jvm:$ktorVersion")
     implementation("io.ktor:ktor-server-netty-jvm:$ktorVersion")
