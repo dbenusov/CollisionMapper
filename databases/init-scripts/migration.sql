@@ -1,5 +1,6 @@
-CREATE TABLE IF NOT EXISTS users (
+CREATE TABLE IF NOT EXISTS data (
    id SERIAL PRIMARY KEY,
-   name VARCHAR(100),
-   email VARCHAR(100)
+   case_number VARCHAR(100),
+   latitude FLOAT,
+   longitude FLOAT
 );

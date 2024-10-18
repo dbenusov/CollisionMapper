@@ -10,6 +10,6 @@ echo "Creating test database $TEST_DATABASE"
 psql -v ON_ERROR_STOP=1 --username $POSTGRES_USER $POSTGRES_DB -c "create database $TEST_DATABASE"
 echo "Database $TEST_DATABASE created"
 
-echo "Create test table"
+echo "Create test migrations"
 psql --username $POSTGRES_USER $TEST_DATABASE -f /docker-entrypoint-initdb.d/migration.sql
-echo "Created test tables"
+echo "Created test migrations"

@@ -29,8 +29,8 @@ own running container. There is also a postgres container for production, and fo
 
 ## Set up
 
-1.  Build the applications to place into the docker containers.
-    ```shell
+1.  Build the applications to place into the Docker container.
+    ```bash
     ./gradlew clean build -x test
     ```
 
@@ -45,7 +45,7 @@ own running container. There is also a postgres container for production, and fo
     ```
 
 1. Run the system tests.
-    ```shell
+    ```bash
     ./gradlew test
     ```
 

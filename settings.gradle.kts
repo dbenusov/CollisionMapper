@@ -7,6 +7,8 @@ include(
 
     "components:data-collector",
     "components:data-analyzer",
+    "components:database-support",
+    "components:test-database-support",
 
     "support:logging-support",
     "support:workflow-support"
