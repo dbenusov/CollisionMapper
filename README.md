@@ -19,6 +19,9 @@ It uses the [Ktor](https://ktor.io) web framework, and runs on the [Netty](https
 HTML templates are written using [Freemarker](https://freemarker.apache.org).
 The codebase is tested with [JUnit](https://junit.org/) and uses [Gradle](https://gradle.org) to build a jarfile.
 
+[Docker](https://www.docker.com/) is used to run the applications and host the databases. Please
+download Docker and sign in before executing the steps below.
+
 One docker image is built that contains all three applications, but, each application will have its
 own running container. There is also a postgres container for production, and for local testing a testing database.
 
