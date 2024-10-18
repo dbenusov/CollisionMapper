@@ -4,11 +4,11 @@ import org.junit.Before
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-class CollisionDataGatewayTest {
+class CollectorDataGatewayTest {
     private val dbName = "collisions"
     private val tableName = "data"
     private val dbTemplate = testDatabaseTemplate(dbName)
-    private val gateway = CollisionDataGateway(dbTemplate)
+    private val gateway = CollectorDataGateway(dbTemplate)
 
     @Before
     fun setUp() {

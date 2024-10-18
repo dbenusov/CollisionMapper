@@ -11,6 +11,12 @@ import io.ktor.server.response.respondText
 import io.ktor.server.routing.Routing
 import io.ktor.server.routing.get
 import java.util.*
+import org.jetbrains.exposed.sql.Database
+
+private val databaseName = "collisions"
+private val database = Database.connect("jdbc:postgresql://localhost:5432/${databaseName}?user=postgres&password=password")
+private val dbTemplate = DatabaseTemplate(database)
+private val gateway = CollectorDataGateway(dbTemplate)
 
 fun Application.module() {
     install(Routing) {
@@ -18,7 +24,7 @@ fun Application.module() {
             call.respondText("hi!", ContentType.Text.Html)
         }
     }
-    val scheduler = WorkScheduler<ExampleTask>(ExampleWorkFinder(), mutableListOf(ExampleWorker()), 30)
+    val scheduler = WorkScheduler<CollectorTask>(CollectorWorkFinder(), mutableListOf(CollectorWorker(gateway)), 30)
     scheduler.start()
 }
 
