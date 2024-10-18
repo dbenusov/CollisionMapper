@@ -1,8 +1,12 @@
-# Kotlin ktor starter
+# Collision Mapper
 
-An [application continuum](https://www.appcontinuum.io/) style example using Kotlin and Ktor
+An [application continuum](https://www.appcontinuum.io/) style application using Kotlin and Ktor
 that includes a single web application with two background workers.
 
+The web server will display on a map the top 10 most dangerous intersections
+based on number of accidents.
+
+Applications:
 * Basic web application
 * Data analyzer
 * Data collector
@@ -15,48 +19,36 @@ It uses the [Ktor](https://ktor.io) web framework, and runs on the [Netty](https
 HTML templates are written using [Freemarker](https://freemarker.apache.org).
 The codebase is tested with [JUnit](https://junit.org/) and uses [Gradle](https://gradle.org) to build a jarfile.
 
+One docker image is built that contains all three applications, but, each application will have its
+own running container. There is also a postgres container for production, and for local testing a testing database.
+
 ## Getting Started
 
-1.  Build a Java Archive (jar) file.
-    ```bash
-    ./gradlew clean build
+## Set up
+
+1.  Build the applications to place into the docker containers.
+    ```shell
+    ./gradlew clean build -x test
     ```
 
-1.  Configure the port that each server runs on.
+1. Build the Docker container.
     ```bash
-    export PORT=8881
+    docker build . --file Dockerfile --tag collision-mapper
     ```
 
-1.  Run the servers locally using the below examples.
-
+1.  Run docker-compose. This will start all three applications, the databases needed for producation/testing, and perform the needed migrations.
     ```bash
-    java -jar applications/basic-server/build/libs/basic-server.jar
+    docker-compose up
     ```
 
-    Data collector
-
-    ```bash
-    java -jar applications/data-collector-server/build/libs/data-collector-server.jar
+1. Run the system tests.
+    ```shell
+    ./gradlew test
     ```
 
-    Data analyzer
-    
+1.  Clean-up all Docker containers and data.
     ```bash
-    java -jar applications/data-analyzer-server/build/libs/data-analyzer-server.jar
+    docker-compose down --volumes 
     ```
-    
-## Running with Docker
-
-1. Build with Docker.
-
-    ```bash
-    docker build -t kotlin-ktor-starter . --platform linux/amd64
-    ```
-
-1.  Run with docker.
-
-    ```bash
-    docker run -e PORT=8881 -p 8881:8881 kotlin-ktor-starter
-    ```
-
-That's a wrap for now.
+   
+The End!
