@@ -1,4 +1,19 @@
 services:
+  postgres:
+    image: postgres:latest  # Use the latest PostgreSQL image
+    ports:
+      - "5432:5432"  # Map container port 5432 to host port 5432
+    environment:
+      POSTGRES_USER: postgres  # Database username
+      POSTGRES_PASSWORD: password  # Database password
+      POSTGRES_DB: collisions  # Database name
+    volumes:
+      # Move the needed scripts into the docker initialization directory to be executed on the first boot.
+      - ./databases/init-scripts:/docker-entrypoint-initdb.d
+      # Mount a volume to persist data
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: "exit 0"
   basic-server:
     image: collision-mapper
     container_name: kotlin-ktor-server
@@ -23,18 +38,8 @@ services:
     environment:
       PORT: 8886
       APP: /opt/applications/data-collector-server.jar
-  postgres:
-    image: postgres:latest  # Use the latest PostgreSQL image
-    ports:
-      - "5432:5432"  # Map container port 5432 to host port 5432
-    environment:
-      POSTGRES_USER: postgres  # Database username
-      POSTGRES_PASSWORD: password  # Database password
-      POSTGRES_DB: collisions  # Database name
-    volumes:
-      # Move the needed scripts into the docker initialization directory to be executed on the first boot.
-      - ./databases/init-scripts:/docker-entrypoint-initdb.d
-      # Mount a volume to persist data
-      - postgres-data:/var/lib/postgresql/data
+    depends_on:
+      postgres:
+        condition: service_healthy
 volumes:
   postgres-data:

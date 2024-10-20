@@ -12,6 +12,7 @@ dependencies {
     implementation("org.slf4j:slf4j-simple:2.0.7")
 
     implementation(project(":components:data-collector"))
+    implementation(project(":components:database-support"))
     implementation(project(":support:workflow-support"))
 
     implementation("io.ktor:ktor-server-core-jvm:$ktorVersion")
@@ -20,6 +21,7 @@ dependencies {
     implementation("org.jetbrains.exposed:exposed-core:$exposedVersion")
 
     testImplementation("io.ktor:ktor-server-tests-jvm:$ktorVersion")
+    testImplementation(project(":components:test-database-support"))
 }
 
 task<JavaExec>("run") {

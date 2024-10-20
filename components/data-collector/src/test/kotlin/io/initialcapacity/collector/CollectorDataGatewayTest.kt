@@ -26,4 +26,16 @@ class CollectorDataGatewayTest {
             }
         assertEquals(expected_data, data)
     }
+
+    @Test
+    fun testGetAll() {
+        val expected_data = CollisionData("12344321", 1234.4321F, 5678.8765F)
+        gateway.save(expected_data)
+        val expected_data1 = CollisionData("12344322", 1234.4321F, 5678.8765F)
+        gateway.save(expected_data1)
+
+        val list = gateway.getAll()
+        assertEquals(expected_data, list[0])
+        assertEquals(expected_data1, list[1])
+    }
 }

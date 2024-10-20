@@ -34,6 +34,8 @@ own running container. There is also a postgres container for production, and fo
     ./gradlew clean build -x test
     ```
 
+1. Make sure Docker is running on your machine
+
 1. Build the Docker container.
     ```bash
     docker build . --file Dockerfile --tag collision-mapper
@@ -46,7 +48,7 @@ own running container. There is also a postgres container for production, and fo
 
 1. Run the system tests.
     ```bash
-    ./gradlew test
+    ./gradlew build
     ```
 
 1.  Clean-up all Docker containers and data.
