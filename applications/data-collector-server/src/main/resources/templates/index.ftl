@@ -4,10 +4,12 @@
     <section>
         <div class="container">
             <p>
-                An example application using Kotlin and Ktor.
+                The list of stored collision records.
             </p>
             <p>
-                <#list data as item>${item}</#list>
+                <#list data as item>
+                    <p>${item}</p>
+                </#list>
             </p>
         </div>
     </section>

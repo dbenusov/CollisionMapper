@@ -25,16 +25,14 @@ download Docker and sign in before executing the steps below.
 One docker image is built that contains all three applications, but, each application will have its
 own running container. There is also a postgres container for production, and for local testing a testing database.
 
-## Getting Started
-
 ## Set up
+
+1. Make sure [Docker](https://www.docker.com/) is installed and running on your machine. Remember to log in!
 
 1.  Build the applications to place into the Docker container.
     ```bash
     ./gradlew clean build -x test
     ```
-
-1. Make sure Docker is running on your machine
 
 1. Build the Docker container.
     ```bash
@@ -45,11 +43,18 @@ own running container. There is also a postgres container for production, and fo
     ```bash
     docker-compose up
     ```
+    The applications need to wait for the database container to issue a health report before starting. This takes about 30 seconds, please be patient before attempting to access the data pages.
 
 1. Run the system tests.
     ```bash
     ./gradlew build
     ```
+
+1. Verification of data storage. Open a web browser to
+    ```
+     http://127.0.0.1:8886/view-data
+    ```
+   Observe the list of stored elements! If nothing appears please wait a minute or so and refresh the page.
 
 1.  Clean-up all Docker containers and data.
     ```bash

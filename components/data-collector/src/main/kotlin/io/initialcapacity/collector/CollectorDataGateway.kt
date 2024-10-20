@@ -5,11 +5,11 @@ class CollectorDataGateway(private val dbTemplate: DatabaseTemplate) {
     fun getAll() : List<CollisionData> {
         var list = mutableListOf<CollisionData>()
         dbTemplate.queryOne("select * from data") {
-            while(it.next()) {
+            do {
                 val col = CollisionData(it.getString("case_number"), it.getFloat("latitude"), it.getFloat("longitude"))
                 list.add(col)
                 print(col.toString())
-            }
+            } while(it.next())
         }
 
         return list.toList()

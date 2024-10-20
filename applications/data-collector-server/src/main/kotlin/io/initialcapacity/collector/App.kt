@@ -14,6 +14,7 @@ import io.ktor.server.routing.get
 import io.ktor.util.pipeline.*
 import java.util.*
 import org.jetbrains.exposed.sql.Database
+import org.slf4j.LoggerFactory
 
 fun Application.module(gateway: CollectorDataGateway) {
     install(FreeMarker) {
@@ -55,9 +56,14 @@ private fun PipelineContext<Unit, ApplicationCall>.data(gateway: CollectorDataGa
     return list
 }
 
+private val database_host = System.getenv("DATABASE_HOST") ?: "localhost:5432"
+private val logger = LoggerFactory.getLogger("main")
+
 fun main() {
     val databaseName = "collisions"
-    val database = DatabaseConfiguration("jdbc:postgresql://localhost:5432/${databaseName}?user=postgres&password=password")
+    logger.info(System.getenv("DATABASE_HOST"))
+    System.getenv("APP")
+    val database = DatabaseConfiguration("jdbc:postgresql://${database_host}/${databaseName}?user=postgres&password=password")
     val dbTemplate = DatabaseTemplate(database.db)
     val gateway = CollectorDataGateway(dbTemplate)
     TimeZone.setDefault(TimeZone.getTimeZone("UTC"))
