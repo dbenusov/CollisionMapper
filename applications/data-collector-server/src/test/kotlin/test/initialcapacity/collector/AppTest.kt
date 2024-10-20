@@ -29,7 +29,7 @@ class AppTest {
     fun testEmptyHome() = testApp {
         val response = client.get("/")
         assertEquals(HttpStatusCode.OK, response.status)
-        assertContains(response.bodyAsText(), "hi!")
+        assertContains(response.bodyAsText(), "hi collector!")
     }
 
     private fun testApp(block: suspend ApplicationTestBuilder.(client: HttpClient) -> Unit) {

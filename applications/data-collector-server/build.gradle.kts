@@ -7,6 +7,7 @@ group = "io.initialcapacity.collector"
 val ktorVersion: String by project
 val exposedVersion: String by project
 val postgresVersion: String by project
+val hikariVersion: String by project
 
 dependencies {
     implementation("org.slf4j:slf4j-simple:2.0.7")
@@ -15,10 +16,14 @@ dependencies {
     implementation(project(":components:database-support"))
     implementation(project(":support:workflow-support"))
 
+    implementation("com.zaxxer:HikariCP:$hikariVersion")
+
     implementation("io.ktor:ktor-server-core-jvm:$ktorVersion")
     implementation("io.ktor:ktor-server-freemarker-jvm:$ktorVersion")
     implementation("io.ktor:ktor-server-netty-jvm:$ktorVersion")
     implementation("org.jetbrains.exposed:exposed-core:$exposedVersion")
+    implementation("org.jetbrains.exposed:exposed-jdbc:$exposedVersion")
+    implementation("org.postgresql:postgresql:$postgresVersion")
 
     testImplementation("io.ktor:ktor-server-tests-jvm:$ktorVersion")
     testImplementation(project(":components:test-database-support"))

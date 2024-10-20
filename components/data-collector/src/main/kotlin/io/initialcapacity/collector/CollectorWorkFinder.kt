@@ -9,7 +9,7 @@ class CollectorWorkFinder : WorkFinder<CollectorTask> {
     override fun findRequested(name: String): List<CollectorTask> {
         logger.info("finding work.")
 
-        val work = CollectorTask("some info")
+        val work = CollectorTask("/crashes/GetCrashesByLocation?fromCaseYear=2014&toCaseYear=2015&state=1&county=1&format=json")
 
         return mutableListOf(work)
     }

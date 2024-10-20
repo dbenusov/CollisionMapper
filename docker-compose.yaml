@@ -30,16 +30,16 @@ services:
     environment:
       PORT: 8887
       APP: /opt/applications/data-analyzer-server.jar
-  data-collector:
-    image: collision-mapper
-    container_name: kotlin-ktor-collector
-    ports:
-      - "8886:8886"
-    environment:
-      PORT: 8886
-      APP: /opt/applications/data-collector-server.jar
-    depends_on:
-      postgres:
-        condition: service_healthy
+#  data-collector:
+#    image: collision-mapper
+#    container_name: kotlin-ktor-collector
+#    ports:
+#      - "8886:8886"
+#    environment:
+#      PORT: 8886
+#      APP: /opt/applications/data-collector-server.jar
+#    depends_on:
+#      postgres:
+#        condition: service_healthy
 volumes:
   postgres-data:

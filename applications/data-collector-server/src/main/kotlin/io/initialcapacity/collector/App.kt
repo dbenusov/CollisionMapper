@@ -1,5 +1,6 @@
 package io.initialcapacity.collector
 
+import freemarker.cache.ClassTemplateLoader
 import io.initialcapacity.workflow.WorkScheduler
 import io.ktor.http.ContentType
 import io.ktor.server.application.*
@@ -15,13 +16,17 @@ import java.util.*
 import org.jetbrains.exposed.sql.Database
 
 fun Application.module(gateway: CollectorDataGateway) {
+    install(FreeMarker) {
+        templateLoader = ClassTemplateLoader(this::class.java.classLoader, "templates")
+    }
     install(Routing) {
         get("/") {
-            call.respondText("hi!", ContentType.Text.Html)
+            call.respondText("hi collector!", ContentType.Text.Html)
         }
 
         get("/view-data") {
             val map = mapOf(
+                "headers" to headers(),
                 "data" to data(gateway),
             )
             call.respond(FreeMarkerContent("index.ftl", map))
@@ -31,6 +36,14 @@ fun Application.module(gateway: CollectorDataGateway) {
     }
     val scheduler = WorkScheduler<CollectorTask>(CollectorWorkFinder(), mutableListOf(CollectorWorker(gateway)), 30)
     scheduler.start()
+}
+
+private fun PipelineContext<Unit, ApplicationCall>.headers(): MutableMap<String, String> {
+    val headers = mutableMapOf<String, String>()
+    call.request.headers.entries().forEach { entry ->
+        headers[entry.key] = entry.value.joinToString()
+    }
+    return headers
 }
 
 private fun PipelineContext<Unit, ApplicationCall>.data(gateway: CollectorDataGateway): MutableList<String> {
@@ -44,10 +57,8 @@ private fun PipelineContext<Unit, ApplicationCall>.data(gateway: CollectorDataGa
 
 fun main() {
     val databaseName = "collisions"
-    val database by lazy {
-        Database.connect("jdbc:postgresql://localhost:5432/${databaseName}?user=postgres&password=password")
-    }
-    val dbTemplate = DatabaseTemplate(database)
+    val database = DatabaseConfiguration("jdbc:postgresql://localhost:5432/${databaseName}?user=postgres&password=password")
+    val dbTemplate = DatabaseTemplate(database.db)
     val gateway = CollectorDataGateway(dbTemplate)
     TimeZone.setDefault(TimeZone.getTimeZone("UTC"))
     val port = System.getenv("PORT")?.toInt() ?: 8886

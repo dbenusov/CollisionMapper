@@ -4,14 +4,14 @@ import java.sql.ResultSet
 class CollectorDataGateway(private val dbTemplate: DatabaseTemplate) {
     fun getAll() : List<CollisionData> {
         var list = mutableListOf<CollisionData>()
-        val result = dbTemplate.queryOne("select * from data") {it}
-        if (result == null)
-            return list.toList()
+        dbTemplate.queryOne("select * from data") {
+            while(it.next()) {
+                val col = CollisionData(it.getString("case_number"), it.getFloat("latitude"), it.getFloat("longitude"))
+                list.add(col)
+                print(col.toString())
+            }
+        }
 
-        do {
-            val col = CollisionData(result.getString("case_number"), result.getFloat("latitude"), result.getFloat("longitude"))
-            list.add(col)
-        } while (result.next())
         return list.toList()
     }
 
