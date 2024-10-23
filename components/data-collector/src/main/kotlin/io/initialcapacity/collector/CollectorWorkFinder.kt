@@ -5,16 +5,38 @@ import org.slf4j.LoggerFactory
 
 class CollectorWorkFinder : WorkFinder<CollectorTask> {
     private val logger = LoggerFactory.getLogger(this.javaClass)
+    private val work_map = mapOf(
+        "data-collector" to createWorkList())
+
+    fun createWorkList() : List<CollectorTask> {
+        var list = mutableListOf<CollectorTask>()
+        for (state in 1..2) {
+            for (start_year in 2010..2022 step 2) {
+                val end_year = start_year + 1
+                list.add(CollectorTask("/FARSData/GetFARSData?dataset=Accident&FromYear=$start_year&ToYear=$end_year&state=$state&format=json"))
+            }
+        }
+        return list
+    }
 
     override fun findRequested(name: String): List<CollectorTask> {
         logger.info("finding work.")
 
-        val work = CollectorTask("/crashes/GetCrashesByLocation?fromCaseYear=2014&toCaseYear=2015&state=1&county=1&format=json")
+        var list = mutableListOf<CollectorTask>()
+        val work = work_map[name]
+        if (work != null)
+            for (item in work) {
+                if (!item.complete)
+                    list.add(item)
+            }
+        else
+            logger.info("$name work is already done.")
 
-        return mutableListOf(work)
+        return list
     }
 
     override fun markCompleted(info: CollectorTask) {
         logger.info("marking work complete.")
+        info.complete = true
     }
 }

@@ -1,16 +1,16 @@
 package io.initialcapacity.collector
 
 import io.initialcapacity.workflow.Worker
-import kotlinx.coroutines.runBlocking
-import org.slf4j.LoggerFactory
 import io.ktor.client.*
-import io.ktor.client.call.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
+import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.*
+import org.slf4j.LoggerFactory
 
-class CollectorWorker(val gateway: CollectorDataGateway, override val name: String = "data-collector") : Worker<CollectorTask> {
+class CollectorWorker(val gateway: CollectorDataGateway, override val name: String = "data-collector") :
+    Worker<CollectorTask> {
     private val logger = LoggerFactory.getLogger(this.javaClass)
     val client = HttpClient(CIO)
 
@@ -42,12 +42,13 @@ class CollectorWorker(val gateway: CollectorDataGateway, override val name: Stri
                 val case_number = removeExtraQuotes(collision_json["ST_CASE"].toString())
                 val latitude = collision_json["LATITUDE"]?.jsonPrimitive?.float
                 val longitude = collision_json["LONGITUD"]?.jsonPrimitive?.float
-                if (latitude == null || longitude == null) {
-                    logger.error("Invalid coordinates for $case_number")
+                val year = removeExtraQuotes(collision_json["CaseYear"].toString())
+                if (latitude == null || longitude == null || year.isEmpty()) {
+                    logger.error("Invalid data for $case_number")
                     continue
                 }
 
-                gateway.save(CollisionData(case_number, latitude, longitude))
+                gateway.save(CollisionData(case_number, latitude, longitude, year))
             }
 
             logger.info("completed data collection.")

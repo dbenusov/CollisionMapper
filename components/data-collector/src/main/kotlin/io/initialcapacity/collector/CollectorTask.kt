@@ -1,3 +1,3 @@
 package io.initialcapacity.collector
 
-data class CollectorTask(val queryUrl: String)
+data class CollectorTask(val queryUrl: String, var complete: Boolean = false)
