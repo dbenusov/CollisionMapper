@@ -1,6 +1,6 @@
 services:
   postgres:
-    image: postgres:latest  # Use the latest PostgreSQL image
+    image: postgis/postgis:latest  # Use the latest postgis image
     ports:
       - "5432:5432"  # Map container port 5432 to host port 5432
     environment:

@@ -1,7 +1,10 @@
+CREATE EXTENSION postgis;
+
 CREATE TABLE IF NOT EXISTS data (
    id SERIAL PRIMARY KEY,
    case_number VARCHAR(100),
-   latitude FLOAT,
-   longitude FLOAT,
-   date_year VARCHAR(8)
+   date_year VARCHAR(8),
+   location GEOGRAPHY(POINT)
 );
+
+CREATE INDEX ON data USING gist(location);

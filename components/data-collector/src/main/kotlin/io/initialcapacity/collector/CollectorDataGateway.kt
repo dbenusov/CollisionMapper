@@ -4,9 +4,9 @@ import java.sql.ResultSet
 class CollectorDataGateway(private val dbTemplate: DatabaseTemplate) {
     fun getAll() : List<CollisionData> {
         var list = mutableListOf<CollisionData>()
-        dbTemplate.queryOne("select * from data") {
+        dbTemplate.queryOne("select case_number, ST_X(location::geometry), ST_Y(location::geometry), date_year from data") {
             do {
-                val col = CollisionData(it.getString("case_number"), it.getFloat("latitude"), it.getFloat("longitude"), it.getString("date_year"))
+                val col = CollisionData(it.getString("case_number"), it.getFloat("st_y"), it.getFloat("st_x"), it.getString("date_year"))
                 list.add(col)
             } while(it.next())
         }
@@ -16,7 +16,7 @@ class CollectorDataGateway(private val dbTemplate: DatabaseTemplate) {
 
     fun save(data: CollisionData): Unit = dbTemplate.execute(
         //language=SQL
-        "insert into data (case_number, latitude, longitude, date_year) values (?, ?, ?, ?)",
-        data.case_number, data.latitude, data.longitude, data.year
+        "insert into data (case_number, date_year, location) values (?, ?, ST_MakePoint(?, ?))",
+        data.case_number, data.year, data.longitude, data.latitude
     )
 }
