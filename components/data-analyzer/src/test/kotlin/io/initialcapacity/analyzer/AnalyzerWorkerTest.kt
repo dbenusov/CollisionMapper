@@ -25,13 +25,12 @@ class AnalyzerWorkerTest {
         worker.execute(task)
 
         val worker1 = AnalyzerWorker(gateway)
-        val task1 = AnalyzerTask("0.1")
+        val task1 = AnalyzerTask("0.1") // 11.1km clusters
         worker1.execute(task1)
 
-        val expected_data = listOf(CollisionData("10018", 32.52434444F, -86.672119440F, "2015"), CollisionData("10124", 32.58379167F, -86.464288890F, "2014"), CollisionData("10318", 32.64268056F, -86.756822220F, "2014"))
         val clusters = gateway.getAll()
         assertEquals(4, clusters.size)
-        val large_cluster = clusters[1]
+        val large_cluster = clusters[1] // One cluster always has more points! How deadly!
         assertEquals(12, large_cluster.core.data_points.size)
         assertEquals(32.544567F, large_cluster.latitude)
         assertEquals(-86.4841F, large_cluster.longitude)
