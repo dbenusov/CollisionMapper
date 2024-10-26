@@ -4,7 +4,7 @@ import java.sql.ResultSet
 class CollectorDataGateway(private val dbTemplate: DatabaseTemplate) {
     fun getAll() : List<CollisionData> {
         var list = mutableListOf<CollisionData>()
-        dbTemplate.queryOne("select case_number, ST_X(location::geometry), ST_Y(location::geometry), date_year from data") {
+        dbTemplate.queryOne("select data.*, ST_X(location::geometry), ST_Y(location::geometry) from data") {
             do {
                 val col = CollisionData(it.getString("case_number"), it.getFloat("st_y"), it.getFloat("st_x"), it.getString("date_year"))
                 list.add(col)
