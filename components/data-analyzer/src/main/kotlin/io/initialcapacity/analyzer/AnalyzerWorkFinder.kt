@@ -9,7 +9,7 @@ class AnalyzerWorkFinder : WorkFinder<AnalyzerTask> {
     override fun findRequested(name: String): List<AnalyzerTask> {
         logger.info("finding work.")
 
-        val work = AnalyzerTask("some info")
+        val work = AnalyzerTask("0.0001")
 
         return mutableListOf(work)
     }

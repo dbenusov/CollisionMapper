@@ -3,14 +3,14 @@ package io.initialcapacity.analyzer
 import io.initialcapacity.DatabaseTemplate
 
 class AnalyzerDataGateway(private val dbTemplate: DatabaseTemplate) {
-    fun clusterCollisions() : List<ClusterCore> {
+    fun clusterCollisions(range: String) : List<ClusterCore> {
         var list = mutableListOf<ClusterCore>()
         dbTemplate
             .queryOne(
                 "WITH clustered_data AS (\n" +
                         "    SELECT \n" +
                         "        data.*,\n" +
-                        "        ST_ClusterWithinWin(location::geometry, 0.1) OVER () AS cluster_num\n" +
+                        "        ST_ClusterWithinWin(location::geometry, $range) OVER () AS cluster_num\n" +
                         "    FROM data\n" +
                         ")\n" +
                         "SELECT\n" +

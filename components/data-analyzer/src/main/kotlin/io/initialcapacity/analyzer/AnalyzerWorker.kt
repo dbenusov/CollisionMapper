@@ -12,7 +12,7 @@ class AnalyzerWorker(val gateway: AnalyzerDataGateway, override val name: String
             logger.info("starting data analysis.")
 
             // todo - data analysis happens here
-            val clusters = gateway.clusterCollisions();
+            val clusters = gateway.clusterCollisions(task.range);
             for (cluster in clusters) {
                 val id = gateway.save(cluster)
                 for (collision in cluster.data_points) {
