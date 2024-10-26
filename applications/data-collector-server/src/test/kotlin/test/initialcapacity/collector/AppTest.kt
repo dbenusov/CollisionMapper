@@ -1,7 +1,6 @@
 package test.initialcapacity.collector
 
 import io.initialcapacity.collector.CollectorDataGateway
-import io.initialcapacity.collector.DatabaseTemplate
 import io.initialcapacity.collector.module
 import io.initialcapacity.collector.testDatabaseTemplate
 import io.ktor.client.HttpClient
@@ -10,7 +9,6 @@ import io.ktor.client.statement.bodyAsText
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.testing.ApplicationTestBuilder
 import io.ktor.server.testing.testApplication
-import org.jetbrains.exposed.sql.Database
 import org.junit.Test
 import kotlin.test.assertContains
 import kotlin.test.assertEquals

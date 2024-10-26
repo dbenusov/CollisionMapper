@@ -18,11 +18,11 @@ class CollectorDataGatewayTest {
     @Test
     fun testSave() {
         val expected_data = CollisionData("12344321", 37.36760F, -122.02515F, "2024")
-        gateway.save(expected_data)
+        expected_data.id = gateway.save(expected_data)
 
         val data = dbTemplate
             .queryOne("select data.*, ST_X(location::geometry), ST_Y(location::geometry) from data where case_number = '${expected_data.case_number}'") {
-                CollisionData(it.getString("case_number"), it.getFloat("st_y"), it.getFloat("st_x"), it.getString("date_year"))
+                CollisionData(it.getString("case_number"), it.getFloat("st_y"), it.getFloat("st_x"), it.getString("date_year"), it.getString("id"))
             }
         assertEquals(expected_data, data)
     }
@@ -30,9 +30,9 @@ class CollectorDataGatewayTest {
     @Test
     fun testGetAll() {
         val expected_data = CollisionData("12344321", 37.36760F, -122.02515F, "2024")
-        gateway.save(expected_data)
+        expected_data.id = gateway.save(expected_data)
         val expected_data1 = CollisionData("12344322", 37.36861F, -123.02515F, "2023")
-        gateway.save(expected_data1)
+        expected_data1.id = gateway.save(expected_data1)
         gateway.save(CollisionData("12344323", 37.36862F, -123.02515F, "2023"))
 
         val list = gateway.getAll()

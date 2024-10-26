@@ -22,8 +22,8 @@ fun Application.module() {
             call.respondText("Data Analyzer Responding!", ContentType.Text.Plain)
         }
     }
-    val scheduler = WorkScheduler<ExampleTask>(ExampleWorkFinder(), mutableListOf(ExampleWorker()), 30)
-    scheduler.start()
+//    val scheduler = WorkScheduler<AnalyzerTask>(AnalyzerWorkFinder(), mutableListOf(AnalyzerWorker()), 30)
+//    scheduler.start()
 }
 
 fun main() {

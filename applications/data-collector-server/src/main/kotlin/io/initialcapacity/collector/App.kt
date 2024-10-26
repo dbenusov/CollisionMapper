@@ -1,6 +1,7 @@
 package io.initialcapacity.collector
 
 import freemarker.cache.ClassTemplateLoader
+import io.initialcapacity.DatabaseTemplate
 import io.initialcapacity.workflow.WorkScheduler
 import io.ktor.http.ContentType
 import io.ktor.server.application.*
@@ -13,7 +14,6 @@ import io.ktor.server.routing.Routing
 import io.ktor.server.routing.get
 import io.ktor.util.pipeline.*
 import java.util.*
-import org.jetbrains.exposed.sql.Database
 import org.slf4j.LoggerFactory
 
 fun Application.module(gateway: CollectorDataGateway) {

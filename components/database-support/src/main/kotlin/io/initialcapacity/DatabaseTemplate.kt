@@ -1,4 +1,4 @@
-package io.initialcapacity.collector
+package io.initialcapacity
 
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.transactions.transaction
