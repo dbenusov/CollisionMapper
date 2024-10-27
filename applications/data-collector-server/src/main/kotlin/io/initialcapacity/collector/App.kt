@@ -1,6 +1,7 @@
 package io.initialcapacity.collector
 
 import freemarker.cache.ClassTemplateLoader
+import io.initialcapacity.DatabaseConfiguration
 import io.initialcapacity.DatabaseTemplate
 import io.initialcapacity.workflow.WorkScheduler
 import io.ktor.http.ContentType
@@ -15,6 +16,8 @@ import io.ktor.server.routing.get
 import io.ktor.util.pipeline.*
 import java.util.*
 import org.slf4j.LoggerFactory
+
+private val work_finder = CollectorWorkFinder()
 
 fun Application.module(gateway: CollectorDataGateway) {
     install(FreeMarker) {
@@ -32,10 +35,17 @@ fun Application.module(gateway: CollectorDataGateway) {
             )
             call.respond(FreeMarkerContent("index.ftl", map))
         }
+
+        get("/check-status") {
+            if (work_finder.checkStatus())
+                call.respondText("Ready", ContentType.Text.Html)
+            else
+                call.respondText("Processing", ContentType.Text.Html)
+        }
         staticResources("/static/styles", "static/styles")
         staticResources("/static/images", "static/images")
     }
-    val scheduler = WorkScheduler<CollectorTask>(CollectorWorkFinder(), mutableListOf(CollectorWorker(gateway)), 30)
+    val scheduler = WorkScheduler<CollectorTask>(work_finder, mutableListOf(CollectorWorker(gateway)), 30)
     scheduler.start()
 }
 

@@ -63,6 +63,12 @@ class AnalyzerDataGateway(private val dbTemplate: DatabaseTemplate) {
         )
     }
 
+    fun updateClusterSize(id: String, size: Int) : Unit {
+        dbTemplate.execute(
+            "UPDATE cluster SET list_size = $size WHERE id = $id"
+        )
+    }
+
     fun save(data: ClusterCore): String {
         return dbTemplate.queryOne(
             //language=SQL

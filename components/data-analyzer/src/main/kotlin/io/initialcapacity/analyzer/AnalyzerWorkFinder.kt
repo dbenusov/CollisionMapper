@@ -1,20 +1,64 @@
 package io.initialcapacity.analyzer
 
 import io.initialcapacity.workflow.WorkFinder
+import io.ktor.client.*
+import io.ktor.client.engine.cio.*
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
+import kotlinx.coroutines.runBlocking
 import org.slf4j.LoggerFactory
 
-class AnalyzerWorkFinder : WorkFinder<AnalyzerTask> {
+class AnalyzerWorkFinder(val collector_url: String) : WorkFinder<AnalyzerTask> {
+    val client = HttpClient(CIO)
     private val logger = LoggerFactory.getLogger(this.javaClass)
+    private val work_map = mapOf(
+        "data-analyzer" to createWorkList())
+
+    fun createWorkList() : List<AnalyzerTask> {
+        var list = mutableListOf<AnalyzerTask>()
+        list.add(AnalyzerTask("0.0001"))
+        return list
+    }
 
     override fun findRequested(name: String): List<AnalyzerTask> {
-        logger.info("finding work.")
+        logger.info("finding work")
 
-        val work = AnalyzerTask("0.0001")
+        var status = false
+        // Send GET request
+        runBlocking {
+            try {
+                // Send GET request
+                val response: HttpResponse = client.get("http://$collector_url/check-status")
+                // Check if response contains the text
+                val body: String = response.bodyAsText()
+                status = body.contains("Ready")
+            } catch (e: Exception) {
+                println("Failed to retrieve the page: ${e.message}")
+            }
+        }
 
-        return mutableListOf(work)
+
+        var list = mutableListOf<AnalyzerTask>()
+
+        if (!status) {
+            logger.info("Data is not ready")
+            return list
+        }
+
+        val work = work_map[name]
+        if (work != null)
+            for (item in work) {
+                if (!item.complete && !item.in_process)
+                    list.add(item)
+            }
+        else
+            logger.info("$name work is already done.")
+
+        return list
     }
 
     override fun markCompleted(info: AnalyzerTask) {
         logger.info("marking work complete.")
+        info.complete = true
     }
 }

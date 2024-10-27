@@ -19,6 +19,17 @@ class CollectorWorkFinder : WorkFinder<CollectorTask> {
         return list
     }
 
+    fun checkStatus() : Boolean {
+        var is_ready = true
+        work_map.forEach { entry ->
+            for (work in entry.value) {
+                if (!work.complete)
+                    is_ready = false
+            }
+        }
+        return is_ready
+    }
+
     override fun findRequested(name: String): List<CollectorTask> {
         logger.info("finding work.")
 

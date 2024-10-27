@@ -2,6 +2,7 @@ CREATE EXTENSION postgis;
 
 CREATE TABLE IF NOT EXISTS cluster (
    id SERIAL PRIMARY KEY,
+   list_size INT,
    points GEOMETRY(MULTIPOINT)
 );
 
