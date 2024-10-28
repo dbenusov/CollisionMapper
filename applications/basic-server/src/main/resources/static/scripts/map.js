@@ -24,23 +24,7 @@ function calculateRadius() {
   return 20 * scale;
 }
 
-async function initMap() {
-  // [START maps_add_map_instantiate_map]
-  // The location of central Kansas.
-  const position = { lat: 38.336116093218386, lng: -99.84312923685623 };
-  // Request needed libraries.
-  //@ts-ignore
-  const { Map } = await google.maps.importLibrary("maps");
-  const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
-
-  // The map, centered at Uluru
-  map = new Map(document.getElementById("map"), {
-    zoom: 4.8,
-    center: position,
-    mapId: "DEMO_MAP_ID",
-  });
-
-  map.addListener("center_changed", () => {
+function updateClusters() {
     console.log(currentUrl)
     let bounds = map.getBounds();
     let fetchUrl = currentUrl + "/json-data/" + bounds.bi.lo + "/" + bounds.Gh.lo + "/" + bounds.bi.hi + "/" + bounds.Gh.hi;
@@ -67,6 +51,30 @@ async function initMap() {
         .catch(error => {
             console.error('There was a problem with the fetch operation:', error);
         });
+}
+
+async function initMap() {
+  // [START maps_add_map_instantiate_map]
+  // The location of central Kansas.
+  const position = { lat: 38.336116093218386, lng: -99.84312923685623 };
+  // Request needed libraries.
+  //@ts-ignore
+  const { Map } = await google.maps.importLibrary("maps");
+  const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
+
+  // The map, centered at Uluru
+  map = new Map(document.getElementById("map"), {
+    zoom: 4.8,
+    center: position,
+    mapId: "DEMO_MAP_ID",
+  });
+
+  map.addListener("center_changed", () => {
+    updateClusters();
+  });
+
+  map.addListener("center_changed", () => {
+    updateClusters();
   });
 
   infoWindow = new google.maps.InfoWindow();

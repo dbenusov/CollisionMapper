@@ -14,34 +14,42 @@ services:
       - postgres-data:/var/lib/postgresql/data
     healthcheck:
       test: "exit 0"
-#  basic-server:
-#    image: collision-mapper
-#    container_name: kotlin-ktor-server
-#    ports:
-#      - "8888:8888"
-#    environment:
-#      PORT: 8888
-#      APP: /opt/applications/basic-server.jar
-#  data-analyzer:
-#    image: collision-mapper
-#    container_name: kotlin-ktor-analyzer
-#    ports:
-#      - "8887:8887"
-#    environment:
-#      PORT: 8887
-#      APP: /opt/applications/data-analyzer-server.jar
-#      DATABASE_HOST: "host.docker.internal"
-#  data-collector:
-#    image: collision-mapper
-#    container_name: kotlin-ktor-collector
-#    ports:
-#      - "8886:8886"
-#    environment:
-#      PORT: 8886
-#      APP: /opt/applications/data-collector-server.jar
-#      DATABASE_HOST: "host.docker.internal"
-#    depends_on:
-#      postgres:
-#        condition: service_healthy
+  basic-server:
+    image: collision-mapper
+    container_name: kotlin-ktor-server
+    ports:
+      - "8888:8888"
+    environment:
+      PORT: 8888
+      APP: /opt/applications/basic-server.jar
+      DATABASE_HOST: "host.docker.internal"
+    depends_on:
+      postgres:
+        condition: service_healthy
+  data-analyzer:
+    image: collision-mapper
+    container_name: kotlin-ktor-analyzer
+    ports:
+      - "8887:8887"
+    environment:
+      PORT: 8887
+      APP: /opt/applications/data-analyzer-server.jar
+      DATABASE_HOST: "host.docker.internal"
+      COLLECTOR_URL: "host.docker.internal:8886"
+    depends_on:
+      postgres:
+        condition: service_healthy
+  data-collector:
+    image: collision-mapper
+    container_name: kotlin-ktor-collector
+    ports:
+      - "8886:8886"
+    environment:
+      PORT: 8886
+      APP: /opt/applications/data-collector-server.jar
+      DATABASE_HOST: "host.docker.internal"
+    depends_on:
+      postgres:
+        condition: service_healthy
 volumes:
   postgres-data:
