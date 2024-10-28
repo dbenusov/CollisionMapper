@@ -48,6 +48,9 @@ fun Application.module(gateway: DisplayDataGateway) {
     }
     install(Routing) {
         get("/") {
+            call.respondRedirect("/static/html/index.html")
+        }
+        get("/test") {
             val map = mapOf(
                 "headers" to headers(),
                 "variables" to variables()

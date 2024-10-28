@@ -7,13 +7,21 @@
 // [START maps_add_map]
 // Initialize and add the map
 let map;
+let circle_data;
 let circles;
 let currentUrl = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
+let infoWindow;
 
 function clearMap() {
   for (let i = 0; i < 10; i++) {
     circles[i].setMap(null);
   }
+}
+
+function calculateRadius() {
+  let zoom = map.getZoom();
+  let scale = 156543.03392 * Math.cos(map.getCenter().lat() * Math.PI / 180) / Math.pow(2, zoom);
+  return 20 * scale;
 }
 
 async function initMap() {
@@ -45,12 +53,14 @@ async function initMap() {
         })
         .then(data => {
             clearMap();
+            circle_data = data.clusters;
             // Process the JSON data here
             console.log(data); // Example: print the JSON data
             for (let i = 0; i < Math.min(data.clusters.length, 10); i++) {
               let cluster = data.clusters[i]
               circles[i].setCenter({ lat: cluster.latitude, lng: cluster.longitude })
               circles[i].setMap(map);
+              circles[i].setRadius(calculateRadius());
             }
             // You can now manipulate the data as needed
         })
@@ -59,7 +69,10 @@ async function initMap() {
         });
   });
 
+  infoWindow = new google.maps.InfoWindow();
+
   // Initialize 10 circles. Do not place them on the map yet.
+  circle_data = [];
   circles = [];
   for (let i = 0; i < 10; i++) {
     let circle = new google.maps.Circle({
@@ -70,9 +83,29 @@ async function initMap() {
                        fillOpacity: 0.35,
                        map,
                        center: position,
-                       radius: 6,
+                       radius: calculateRadius(),
                      });
     circle.setMap(map);
+    // Add click event listener to the circle
+    google.maps.event.addListener(circle, 'click', function(event) {
+      // Set the content dynamically based on circle data
+      const contentString = `
+        <div>
+          <strong>Circle Information</strong><br>
+          Accidents: ${circle_data[i].collisions}<br>
+        </div>
+      `;
+
+      // Update the InfoWindow content
+      infoWindow.setContent(contentString);
+
+      // Set the position of the InfoWindow to the click location
+      infoWindow.setPosition(circle.getCenter());
+
+      // Open the InfoWindow on the map
+      infoWindow.open(map);
+    });
+
     circles.push(circle);
   }
 }
