@@ -1,6 +1,8 @@
 package test.initialcapacity.analyzer
 
+import io.initialcapacity.analyzer.AnalyzerDataGateway
 import io.initialcapacity.analyzer.module
+import io.initialcapacity.collector.testDatabaseTemplate
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
 import io.ktor.client.statement.bodyAsText
@@ -12,6 +14,14 @@ import kotlin.test.Test
 import kotlin.test.assertContains
 
 class AppTest {
+    private val dbName = "collisions"
+    private val dbTemplate = testDatabaseTemplate(dbName)
+    private val gateway = AnalyzerDataGateway(dbTemplate)
+
+    fun setUp() {
+        dbTemplate.execute("delete from data")
+        dbTemplate.execute("delete from cluster")
+    }
 
     @Test
     fun testEmptyHome() = testApp {
@@ -22,7 +32,7 @@ class AppTest {
 
     private fun testApp(block: suspend ApplicationTestBuilder.(client: HttpClient) -> Unit) {
         testApplication {
-            application { module() }
+            application { module(gateway) }
             block(client)
         }
     }

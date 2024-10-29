@@ -29,6 +29,11 @@ own running container. There is also a postgres container for production, and fo
 
 1. Make sure [Docker](https://www.docker.com/) is installed and running on your machine. Remember to log in!
 
+1.  Clean-up all Docker containers and data. Starting with a clean slate is good!
+    ```bash
+    docker-compose down --volumes 
+    ```
+
 1.  Build the applications to place into the Docker container.
     ```bash
     ./gradlew clean build -x test

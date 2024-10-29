@@ -29,6 +29,7 @@ dependencies {
     implementation("io.ktor:ktor-client-json:$ktorVersion")
 
     testImplementation("io.ktor:ktor-server-tests-jvm:$ktorVersion")
+    testImplementation(project(":components:test-database-support"))
 }
 
 task<JavaExec>("run") {

@@ -16,7 +16,7 @@ services:
       test: "exit 0"
   basic-server:
     image: collision-mapper
-    container_name: kotlin-ktor-server
+    container_name: collision-server
     ports:
       - "8888:8888"
     environment:
@@ -28,7 +28,7 @@ services:
         condition: service_healthy
   data-analyzer:
     image: collision-mapper
-    container_name: kotlin-ktor-analyzer
+    container_name: collision-analyzer
     ports:
       - "8887:8887"
     environment:
@@ -41,7 +41,7 @@ services:
         condition: service_healthy
   data-collector:
     image: collision-mapper
-    container_name: kotlin-ktor-collector
+    container_name: collision-collector
     ports:
       - "8886:8886"
     environment:
