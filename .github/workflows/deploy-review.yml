@@ -11,6 +11,29 @@ env:
 jobs:
   run-tests:
     runs-on: ubuntu-latest
+    # Docker Hub image that `container-job` executes in
+    container: node:20-bookworm-slim
+
+    # Service containers to run with `container-job`
+    services:
+      # Label used to access the service container
+      postgres:
+        # Docker Hub image
+        image: postgis/postgis:latest  # Use the latest postgis image
+        # Provide the password for postgres
+        env:
+          POSTGRES_USER: postgres  # Database username
+          POSTGRES_PASSWORD: password  # Database password
+        # Set health checks to wait until postgres has started
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries
+        ports:
+          # Maps tcp port 5432 on service container to the host
+          - 5432:5432
+
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-java@v4
@@ -18,6 +41,13 @@ jobs:
           distribution: 'temurin'
           java-version: 21
           cache: 'gradle'
+      - name: "Migrate database"
+        run: |
+          ./databases/init-scripts/create-databases.sh
+        env:
+          POSTGRES_USER: postgres  # Database username
+          POSTGRES_PASSWORD: password  # Database password
+          POSTGRES_DB: collisions  # Database name
       - name: "build"
         run: ./gradlew build
       - uses: actions/upload-artifact@v4
