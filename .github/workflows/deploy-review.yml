@@ -42,7 +42,9 @@ jobs:
           java-version: 21
           cache: 'gradle'
       - name: Install PostgreSQL client
-        run: apt-get install -y postgresql-client
+        run: |
+          apt-get update
+          apt-get install -y postgresql-client
       - name: "Migrate database"
         run: |
           ./databases/init-scripts/create-databases.sh
