@@ -44,13 +44,17 @@ own running container. There is also a postgres container for production, and fo
     docker build . --file Dockerfile --tag collision-mapper
     ```
 
-1.  Run docker-compose. This will start all three applications, the databases needed for producation/testing, and perform the needed migrations.
+1.  Run docker-compose. This will start all three applications, the databases needed for producation/testing, and 
+perform the needed migrations. It is very important that you wait at least a minute for all of the applications to start
+running before starting the system tests.
     ```bash
     docker-compose up
     ```
-    The applications need to wait for the database container to issue a health report before starting. This takes about 30 seconds, please be patient before attempting to access the data pages.
+    The applications need to wait for the database container to issue a health report before starting. This takes about 
+30 seconds, please be patient before attempting to access the data pages.
 
-1. Run the system tests.
+1. PLEASE WAIT TO RUN THIS, THE DOCKERIZED APPLICATIONS MUST BE READY. Runs the system tests, when the system is 
+fully initialized. Technically, only the postgres container is needed, but, better safe than sorry.
     ```bash
     ./gradlew build
     ```
@@ -59,7 +63,15 @@ own running container. There is also a postgres container for production, and fo
     ```
      http://127.0.0.1:8886/view-data
     ```
-   Observe the list of stored elements! If nothing appears please wait a minute or so and refresh the page.
+   Observe the list of stored elements! If nothing appears please wait a minute or so and refresh the page. Check the 
+Docker logs and make sure that the collector/analyzer have finished processing their data batches.
+
+1. To view a preliminary version of the collision map go to
+    ```
+     http://127.0.0.1:8888/
+    ```
+   This is very much a work in progress. Move around the map by zooming in and panning. There are clusters of accidents 
+in Alabama and Alaska indicated by the red circles.
 
 1.  Clean-up all Docker containers and data.
     ```bash
