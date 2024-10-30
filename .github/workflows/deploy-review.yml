@@ -24,6 +24,11 @@ jobs:
         env:
           POSTGRES_USER: postgres  # Database username
           POSTGRES_PASSWORD: password  # Database password
+        volumes:
+          # Move the needed scripts into the docker initialization directory to be executed on the first boot.
+          - ./databases/init-scripts:/docker-entrypoint-initdb.d
+          # Mount a volume to persist data
+          - postgres-data:/var/lib/postgresql/data
         # Set health checks to wait until postgres has started
         options: >-
           --health-cmd pg_isready
@@ -41,19 +46,15 @@ jobs:
           distribution: 'temurin'
           java-version: 21
           cache: 'gradle'
-      - name: Install PostgreSQL client
-        run: |
-          apt-get update
-          apt-get install -y postgresql-client
-      - name: "Migrate database"
-        run: |
-          ./databases/init-scripts/create-databases.sh
-        env:
-          POSTGRES_USER: postgres  # Database username
-          POSTGRES_PASSWORD: password  # Database password
-          POSTGRES_DB: collisions  # Database name
       - name: "build"
         run: ./gradlew build
+      - name: Cleanup
+        run: |
+          # Cleanup the named volume for PostgreSQL data
+          docker volume rm postgres-data || echo "Volume 'postgres-data' not found, skipping cleanup."
+          
+          # Optionally, remove any local initialization scripts if needed
+          rm -rf ./databases/init-scripts/* || echo "No init scripts to remove."
       - uses: actions/upload-artifact@v4
         with:
           name: basic-server.jar
