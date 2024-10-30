@@ -41,6 +41,8 @@ jobs:
           distribution: 'temurin'
           java-version: 21
           cache: 'gradle'
+      - name: Install PostgreSQL client
+        run: sudo apt-get install -y postgresql-client
       - name: "Migrate database"
         run: |
           ./databases/init-scripts/create-databases.sh
