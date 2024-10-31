@@ -49,8 +49,7 @@ jobs:
           psql -h postgres -U postgres -d collisions -c "\dt data"
           psql -h postgres -U postgres -d collisions -c "\dt cluster"
         env:
-          POSTGRES_USER: postgres  # Database username
-          POSTGRES_PASSWORD: password  # Database password
+          PGPASSWORD: password  # Database password
       - name: "build"
         run: ./gradlew build
         env:
