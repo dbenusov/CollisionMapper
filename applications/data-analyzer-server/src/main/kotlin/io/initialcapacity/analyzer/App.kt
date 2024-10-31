@@ -100,12 +100,10 @@ private fun PipelineContext<Unit, ApplicationCall>.jsondata(gateway: AnalyzerDat
     }
 }
 
-private val database_host = System.getenv("DATABASE_HOST") ?: "localhost:5432"
 private val logger = LoggerFactory.getLogger("main")
 
 fun main() {
-    val databaseName = "collisions"
-    val database = DatabaseConfiguration("jdbc:postgresql://${database_host}/${databaseName}?user=postgres&password=password")
+    val database = DatabaseConfiguration()
     val dbTemplate = DatabaseTemplate(database.db)
     val gateway = AnalyzerDataGateway(dbTemplate)
     TimeZone.setDefault(TimeZone.getTimeZone("UTC"))

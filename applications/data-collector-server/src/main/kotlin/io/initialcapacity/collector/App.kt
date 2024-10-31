@@ -66,14 +66,10 @@ private fun PipelineContext<Unit, ApplicationCall>.data(gateway: CollectorDataGa
     return list
 }
 
-private val database_host = System.getenv("DATABASE_HOST") ?: "localhost:5432"
 private val logger = LoggerFactory.getLogger("main")
 
 fun main() {
-    val databaseName = "collisions"
-    logger.info(System.getenv("DATABASE_HOST"))
-    System.getenv("APP")
-    val database = DatabaseConfiguration("jdbc:postgresql://${database_host}/${databaseName}?user=postgres&password=password")
+    val database = DatabaseConfiguration()
     val dbTemplate = DatabaseTemplate(database.db)
     val gateway = CollectorDataGateway(dbTemplate)
     TimeZone.setDefault(TimeZone.getTimeZone("UTC"))

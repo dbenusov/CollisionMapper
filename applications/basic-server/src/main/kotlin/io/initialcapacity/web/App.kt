@@ -31,7 +31,6 @@ private val localUrl = "http://localhost:$port"
 private val googleProjectId = System.getenv("PROJECT_NUMBER") ?: ""
 private val googleServiceName = System.getenv("K_SERVICE") ?: ""
 private val googleProjectRegion = System.getenv("PROJECT_REGION") ?: ""
-private val database_host = System.getenv("DATABASE_HOST") ?: "localhost:5432"
 
 fun Application.module(gateway: DisplayDataGateway) {
     logger.info("starting the app")
@@ -125,8 +124,7 @@ private fun PipelineContext<Unit, ApplicationCall>.variables(): MutableMap<Strin
 }
 
 fun main() {
-    val databaseName = "collisions"
-    val database = DatabaseConfiguration("jdbc:postgresql://${database_host}/${databaseName}?user=postgres&password=password")
+    val database = DatabaseConfiguration()
     val dbTemplate = DatabaseTemplate(database.db)
     val gateway = DisplayDataGateway(dbTemplate)
     TimeZone.setDefault(TimeZone.getTimeZone("UTC"))
