@@ -57,6 +57,8 @@ jobs:
           # Verify the tables were created
           psql -h postgres -U $POSTGRES_USER -d $POSTGRES_DB -c "\dt data"
           psql -h postgres -U $POSTGRES_USER -d $POSTGRES_DB -c "\dt cluster"
+        env:
+          PGPASSWORD: $POSTGRES_PASSWORD
       - name: "build"
         run: ./gradlew build
         env:
