@@ -48,6 +48,9 @@ jobs:
           cache: 'gradle'
       - name: "build"
         run: ./gradlew build
+        env:
+          DATABASE_HOST: postgres
+          DATABASE_PORT: 5432
       - name: Cleanup
         run: |
           # Cleanup the named volume for PostgreSQL data
