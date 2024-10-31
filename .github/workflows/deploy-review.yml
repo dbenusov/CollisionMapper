@@ -44,6 +44,14 @@ jobs:
           distribution: 'temurin'
           java-version: 21
           cache: 'gradle'
+      - name: Verify Table Creation
+        run: |
+          # Query to check if the table exists
+          psql -h postgres -U postgres -d collisions -c "\dt data"
+          psql -h postgres -U postgres -d collisions -c "\dt cluster"
+        env:
+          POSTGRES_USER: postgres  # Database username
+          POSTGRES_PASSWORD: password  # Database password
       - name: "build"
         run: ./gradlew build
         env:
