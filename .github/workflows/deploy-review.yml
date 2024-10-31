@@ -58,7 +58,7 @@ jobs:
           psql -h postgres -U $POSTGRES_USER -d $POSTGRES_DB -c "\dt data"
           psql -h postgres -U $POSTGRES_USER -d $POSTGRES_DB -c "\dt cluster"
         env:
-          PGPASSWORD: password
+          PGPASSWORD: ${{ env.POSTGRES_PASSWORD }}
       - name: "build"
         run: ./gradlew build
         env:
