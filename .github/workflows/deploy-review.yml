@@ -27,8 +27,6 @@ jobs:
         volumes:
           # Move the needed scripts into the docker initialization directory to be executed on the first boot.
           - ./databases/init-scripts:/docker-entrypoint-initdb.d
-          # Mount a volume to persist data
-          - postgres-data:/var/lib/postgresql/data
         # Set health checks to wait until postgres has started
         options: >-
           --health-cmd pg_isready
