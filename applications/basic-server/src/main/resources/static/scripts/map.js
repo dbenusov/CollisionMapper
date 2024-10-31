@@ -27,7 +27,9 @@ function calculateRadius() {
 function updateClusters() {
     console.log(currentUrl)
     let bounds = map.getBounds();
-    let fetchUrl = currentUrl + "/json-data/" + bounds.bi.lo + "/" + bounds.Gh.lo + "/" + bounds.bi.hi + "/" + bounds.Gh.hi;
+    const ne = bounds.getNorthEast();
+    const sw = bounds.getSouthWest();
+    let fetchUrl = currentUrl + "/json-data/" + sw.lat() + "/" + sw.lng() + "/" + ne.lat() + "/" + ne.lng();
     fetch(fetchUrl)
         .then(response => {
             if (!response.ok) {
