@@ -7,8 +7,8 @@ on:
 env:
   IMAGE_NAME: collision-mapper
   DOCKER_USERNAME: flyingmonkeys1996
-  POSTGRES_USER: postgres  # Database username
-  POSTGRES_PASSWORD: password  # Database password
+  POSTGRES_USER: ${{ secrets.POSTGRES_USER }}  # Database username
+  POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}  # Database password
   POSTGRES_DB: collisions  # Database name
 
 jobs:
