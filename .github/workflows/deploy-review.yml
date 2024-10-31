@@ -7,6 +7,9 @@ on:
 env:
   IMAGE_NAME: collision-mapper
   DOCKER_USERNAME: flyingmonkeys1996
+  POSTGRES_USER: postgres  # Database username
+  POSTGRES_PASSWORD: password  # Database password
+  POSTGRES_DB: collisions  # Database name
 
 jobs:
   run-tests:
@@ -20,14 +23,6 @@ jobs:
       postgres:
         # Docker Hub image
         image: postgis/postgis:latest  # Use the latest postgis image
-        # Provide the password for postgres
-        env:
-          POSTGRES_USER: postgres  # Database username
-          POSTGRES_PASSWORD: password  # Database password
-          POSTGRES_DB: collisions  # Database name
-        volumes:
-          # Move the needed scripts into the docker initialization directory to be executed on the first boot.
-          - ./databases/init-scripts:/docker-entrypoint-initdb.d
         # Set health checks to wait until postgres has started
         options: >-
           --health-cmd pg_isready
@@ -47,25 +42,22 @@ jobs:
           cache: 'gradle'
       - name: Set up PostgreSQL client tools
         run: apt-get update && apt-get install -y postgresql-client
-      - name: Verify Table Creation
+      - name: Migrate database
         run: |
-          # Query to check if the table exists
-          psql -h postgres -U postgres -d collisions -c "\dt data"
-          psql -h postgres -U postgres -d collisions -c "\dt cluster"
-        env:
-          PGPASSWORD: password  # Database password
+          # Populate real database
+          psql -h postgres -U $POSTGRES_USER -d $POSTGRES_DB -f ./databases/init-scripts/migration.sql
+          # Create test database
+          TEST_DATABASE="${POSTGRES_DB}_test"
+          psql -h postgres -U $POSTGRES_USER -d $POSTGRES_DB -c "create database $TEST_DATABASE"
+          psql -h postgres -U $POSTGRES_USER -d $TEST_DATABASE -f ./databases/init-scripts/migration.sql
+          # Verify the tables were created
+          psql -h postgres -U $POSTGRES_USER -d $POSTGRES_DB -c "\dt data"
+          psql -h postgres -U $POSTGRES_USER -d $POSTGRES_DB -c "\dt cluster"
       - name: "build"
         run: ./gradlew build
         env:
           DATABASE_HOST: postgres
           DATABASE_PORT: 5432
-      - name: Cleanup
-        run: |
-          # Cleanup the named volume for PostgreSQL data
-          docker volume rm postgres-data || echo "Volume 'postgres-data' not found, skipping cleanup."
-          
-          # Optionally, remove any local initialization scripts if needed
-          rm -rf ./databases/init-scripts/* || echo "No init scripts to remove."
       - uses: actions/upload-artifact@v4
         with:
           name: basic-server.jar
