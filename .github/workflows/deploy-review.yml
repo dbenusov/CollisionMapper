@@ -24,6 +24,10 @@ jobs:
         env:
           POSTGRES_USER: postgres  # Database username
           POSTGRES_PASSWORD: password  # Database password
+          POSTGRES_DB: collisions  # Database name
+        volumes:
+          # Move the needed scripts into the docker initialization directory to be executed on the first boot.
+          - ./databases/init-scripts:/docker-entrypoint-initdb.d
         # Set health checks to wait until postgres has started
         options: >-
           --health-cmd pg_isready
