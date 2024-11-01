@@ -13,7 +13,11 @@ class CollectorWorkFinder : WorkFinder<CollectorTask> {
         for (state in 1..2) {
             for (start_year in 2010..2022 step 2) {
                 val end_year = start_year + 1
-                list.add(CollectorTask("/FARSData/GetFARSData?dataset=Accident&FromYear=$start_year&ToYear=$end_year&state=$state&format=json"))
+                list.add(CollectorTask(
+                    "/FARSData/GetFARSData?dataset=Accident&FromYear=$start_year&ToYear=$end_year&state=$state&format=json",
+                    false,
+                    CollectorMetrics(start_year.toString(), end_year.toString()))
+                )
             }
         }
         return list
@@ -28,6 +32,16 @@ class CollectorWorkFinder : WorkFinder<CollectorTask> {
             }
         }
         return is_ready
+    }
+
+    fun getMetrics(): List<CollectorMetrics> {
+        val list = mutableListOf<CollectorMetrics>()
+        work_map.forEach { entry ->
+            for (work in entry.value) {
+                list.add(work.metrics)
+            }
+        }
+        return list
     }
 
     override fun findRequested(name: String): List<CollectorTask> {

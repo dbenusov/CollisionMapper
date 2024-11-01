@@ -4,6 +4,7 @@ import freemarker.cache.ClassTemplateLoader
 import io.initialcapacity.DatabaseConfiguration
 import io.initialcapacity.DatabaseTemplate
 import io.initialcapacity.display.DisplayDataGateway
+import io.initialcapacity.display.DisplayMetrics
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.Application
@@ -24,6 +25,8 @@ import org.slf4j.LoggerFactory
 import java.util.*
 import io.ktor.server.plugins.cors.*
 import kotlinx.serialization.json.*
+import kotlin.time.DurationUnit
+import kotlin.time.TimeSource
 
 private val logger = LoggerFactory.getLogger(object {}.javaClass.enclosingClass)
 private val port = System.getenv("PORT")?.toInt() ?: 8888
@@ -31,6 +34,10 @@ private val localUrl = "http://localhost:$port"
 private val googleProjectId = System.getenv("PROJECT_NUMBER") ?: ""
 private val googleServiceName = System.getenv("K_SERVICE") ?: ""
 private val googleProjectRegion = System.getenv("PROJECT_REGION") ?: ""
+
+// Metrics
+private val time_source = TimeSource.Monotonic
+private val metric_buffer: Queue<DisplayMetrics> = LinkedList<DisplayMetrics>()
 
 fun Application.module(gateway: DisplayDataGateway) {
     logger.info("starting the app")
@@ -49,6 +56,7 @@ fun Application.module(gateway: DisplayDataGateway) {
         get("/") {
             call.respondRedirect("/static/html/index.html")
         }
+
         get("/test") {
             val map = mapOf(
                 "headers" to headers(),
@@ -56,6 +64,7 @@ fun Application.module(gateway: DisplayDataGateway) {
             )
             call.respond(FreeMarkerContent("index.ftl", map))
         }
+
         get("/map") {
             call.respondRedirect("/static/html/index.html")
         }
@@ -65,6 +74,7 @@ fun Application.module(gateway: DisplayDataGateway) {
         staticResources("/static/html", "static/html")
 
         get("/json-data/{lower-lat}/{lower-long}/{upper-lat}/{upper-long}") {
+            val start = time_source.markNow()
             val lower_lat = call.parameters["lower-lat"]
             val lower_long = call.parameters["lower-long"]
             val upper_lat = call.parameters["upper-lat"]
@@ -73,7 +83,23 @@ fun Application.module(gateway: DisplayDataGateway) {
                 call.respond(HttpStatusCode.UnprocessableEntity, "Missing or invalid parameters")
                 return@get
             }
-            call.respond(jsondata(gateway, lower_lat, lower_long, upper_lat, upper_long).toString())
+            val data = jsondata(gateway, lower_lat, lower_long, upper_lat, upper_long)
+            call.respond(data.first.toString())
+            metric_buffer.add(DisplayMetrics(data.second, time_source.markNow() - start))
+            if (metric_buffer.size >= 10)
+                metric_buffer.remove()
+        }
+
+        get("/metrics") {
+            val jsonArray = buildJsonArray {
+                for (metric in metric_buffer) {
+                    add(buildJsonObject {
+                        put("clusters", metric.clusters)
+                        put("duration_ms", metric.time.toString(DurationUnit.MILLISECONDS))
+                    })
+                }
+            }
+            call.respond(jsonArray.toString())
         }
 
         get("/ping") {
@@ -82,8 +108,7 @@ fun Application.module(gateway: DisplayDataGateway) {
     }
 }
 
-private fun PipelineContext<Unit, ApplicationCall>.jsondata(gateway: DisplayDataGateway, min_lat: String, min_long: String, max_lat: String, max_long: String): JsonObject {
-    val list = mutableListOf<String>()
+private fun jsondata(gateway: DisplayDataGateway, min_lat: String, min_long: String, max_lat: String, max_long: String): Pair<JsonObject, Int> {
     val dbData = gateway.getTopTen(min_lat, min_long, max_lat, max_long)
     val jsonArray = buildJsonArray {
         for (data in dbData) {
@@ -93,13 +118,12 @@ private fun PipelineContext<Unit, ApplicationCall>.jsondata(gateway: DisplayData
                 put("longitude", data.longitude)
                 put("collisions", data.core.data_points.size)
             })
-            list.add(data.toString())
         }
     }
 
-    return buildJsonObject {
+    return Pair(buildJsonObject {
         put("clusters", jsonArray)
-    }
+    }, dbData.size)
 }
 
 private fun PipelineContext<Unit, ApplicationCall>.headers(): MutableMap<String, String> {
@@ -110,7 +134,7 @@ private fun PipelineContext<Unit, ApplicationCall>.headers(): MutableMap<String,
     return headers
 }
 
-private fun PipelineContext<Unit, ApplicationCall>.variables(): MutableMap<String, String> {
+private fun variables(): MutableMap<String, String> {
     val variables = mutableMapOf<String, String>()
     variables["project_id"] = googleProjectId
     variables["project_region"] = googleProjectRegion

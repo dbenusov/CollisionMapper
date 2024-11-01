@@ -21,7 +21,7 @@ class AnalyzerWorkerTest {
     @Test
     fun testExecute() {
         val worker = CollectorWorker(collectorGateway)
-        val task = CollectorTask("/crashes/GetCrashesByLocation?fromCaseYear=2014&toCaseYear=2015&state=1&county=1&format=json")
+        val task = CollectorTask("/crashes/GetCrashesByLocation?fromCaseYear=2014&toCaseYear=2015&state=1&county=1&format=json", false, CollectorMetrics("1234", "1234"))
         worker.execute(task)
 
         val worker1 = AnalyzerWorker(gateway)

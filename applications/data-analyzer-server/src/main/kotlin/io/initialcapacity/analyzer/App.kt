@@ -19,8 +19,10 @@ import io.ktor.util.pipeline.*
 import kotlinx.serialization.json.*
 import org.slf4j.LoggerFactory
 import java.util.*
+import kotlin.time.DurationUnit
 
 private val collector_url = System.getenv("COLLECTOR_URL") ?: "localhost:8886"
+private val work_finder = AnalyzerWorkFinder(collector_url)
 
 fun Application.module(gateway: AnalyzerDataGateway) {
     install(FreeMarker) {
@@ -49,10 +51,31 @@ fun Application.module(gateway: AnalyzerDataGateway) {
         get("/json-data") {
             call.respond(jsondata(gateway).toString())
         }
+
+        get("/health-check") {
+        if (work_finder.checkStatus())
+            call.respondText("Ready", ContentType.Text.Html)
+        else
+            call.respondText("Processing", ContentType.Text.Html)
+        }
+
+        get("metrics") {
+            val metrics = work_finder.getMetrics()
+            val jsonArray = buildJsonArray {
+                for (metric in metrics) {
+                    add(buildJsonObject {
+                        put("available_clusters", metric.available_clusters)
+                        put("processed_clusters", metric.processed_clusters)
+                        put("duration_ms", metric.time.toString(DurationUnit.MILLISECONDS))
+                    })
+                }
+            }
+            call.respond(jsonArray.toString())
+        }
         staticResources("/static/styles", "static/styles")
         staticResources("/static/images", "static/images")
     }
-    val scheduler = WorkScheduler<AnalyzerTask>(AnalyzerWorkFinder(collector_url), mutableListOf(AnalyzerWorker(gateway)), 30)
+    val scheduler = WorkScheduler(work_finder, mutableListOf(AnalyzerWorker(gateway)), 30)
     scheduler.start()
 }
 
@@ -64,7 +87,7 @@ private fun PipelineContext<Unit, ApplicationCall>.headers(): MutableMap<String,
     return headers
 }
 
-private fun PipelineContext<Unit, ApplicationCall>.data(gateway: AnalyzerDataGateway): MutableList<String> {
+private fun data(gateway: AnalyzerDataGateway): MutableList<String> {
     val list = mutableListOf<String>()
     val dbData = gateway.getAll()
     for (data in dbData) {
@@ -73,8 +96,7 @@ private fun PipelineContext<Unit, ApplicationCall>.data(gateway: AnalyzerDataGat
     return list
 }
 
-private fun PipelineContext<Unit, ApplicationCall>.jsondata(gateway: AnalyzerDataGateway): JsonObject {
-    val list = mutableListOf<String>()
+private fun jsondata(gateway: AnalyzerDataGateway): JsonObject {
     val dbData = gateway.getAll()
     val jsonArray = buildJsonArray {
         for (data in dbData) {
@@ -91,7 +113,6 @@ private fun PipelineContext<Unit, ApplicationCall>.jsondata(gateway: AnalyzerDat
                 }
                 put("points", points)
             })
-            list.add(data.toString())
         }
     }
 

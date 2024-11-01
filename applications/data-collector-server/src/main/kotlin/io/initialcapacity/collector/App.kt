@@ -14,8 +14,12 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.Routing
 import io.ktor.server.routing.get
 import io.ktor.util.pipeline.*
+import kotlinx.serialization.json.buildJsonArray
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.put
 import java.util.*
 import org.slf4j.LoggerFactory
+import kotlin.time.DurationUnit
 
 private val work_finder = CollectorWorkFinder()
 
@@ -36,11 +40,26 @@ fun Application.module(gateway: CollectorDataGateway) {
             call.respond(FreeMarkerContent("index.ftl", map))
         }
 
-        get("/check-status") {
+        get("/health-check") {
             if (work_finder.checkStatus())
                 call.respondText("Ready", ContentType.Text.Html)
             else
                 call.respondText("Processing", ContentType.Text.Html)
+        }
+
+        get("metrics") {
+            val metrics = work_finder.getMetrics()
+            val jsonArray = buildJsonArray {
+                for (metric in metrics) {
+                    add(buildJsonObject {
+                        put("start_year", metric.start_year)
+                        put("end_year", metric.end_year)
+                        put("collisions", metric.collisions)
+                        put("duration_ms", metric.time.toString(DurationUnit.MILLISECONDS))
+                    })
+                }
+            }
+            call.respond(jsonArray.toString())
         }
         staticResources("/static/styles", "static/styles")
         staticResources("/static/images", "static/images")

@@ -8,9 +8,12 @@ import io.ktor.client.statement.*
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.*
 import org.slf4j.LoggerFactory
+import kotlin.time.TimeSource
 
 class CollectorWorker(val gateway: CollectorDataGateway, override val name: String = "data-collector") :
     Worker<CollectorTask> {
+    private val time_source = TimeSource.Monotonic
+    private var start = time_source.markNow()
     private val logger = LoggerFactory.getLogger(this.javaClass)
     val client = HttpClient(CIO)
 
@@ -23,6 +26,7 @@ class CollectorWorker(val gateway: CollectorDataGateway, override val name: Stri
     }
 
     override fun execute(task: CollectorTask) {
+        start = time_source.markNow()
         runBlocking {
             logger.info("starting data collection.")
 
@@ -37,6 +41,7 @@ class CollectorWorker(val gateway: CollectorDataGateway, override val name: Stri
                 return@runBlocking
             }
 
+            task.metrics.collisions = collisions.get(0).jsonArray.size
             for (collision in collisions.get(0).jsonArray) {
                 val collision_json = collision.jsonObject
                 val case_number = removeExtraQuotes(collision_json["ST_CASE"].toString())
@@ -51,6 +56,7 @@ class CollectorWorker(val gateway: CollectorDataGateway, override val name: Stri
                 gateway.save(CollisionData(case_number, latitude, longitude, year))
             }
 
+            task.metrics.time = time_source.markNow() - start
             logger.info("completed data collection.")
         }
     }

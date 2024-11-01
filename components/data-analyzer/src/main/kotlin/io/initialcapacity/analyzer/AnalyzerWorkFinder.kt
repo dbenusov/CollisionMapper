@@ -12,9 +12,31 @@ class AnalyzerWorkFinder(val collector_url: String) : WorkFinder<AnalyzerTask> {
     val client = HttpClient(CIO)
     private val logger = LoggerFactory.getLogger(this.javaClass)
     private val work_map = mapOf(
-        "data-analyzer" to createWorkList())
+        "data-analyzer" to createWorkList()
+    )
 
-    fun createWorkList() : List<AnalyzerTask> {
+    fun checkStatus(): Boolean {
+        var is_ready = true
+        work_map.forEach { entry ->
+            for (work in entry.value) {
+                if (!work.complete)
+                    is_ready = false
+            }
+        }
+        return is_ready
+    }
+
+    fun getMetrics(): List<AnalyzerMetrics> {
+        val list = mutableListOf<AnalyzerMetrics>()
+        work_map.forEach { entry ->
+            for (work in entry.value) {
+                list.add(work.metrics)
+            }
+        }
+        return list
+    }
+
+    fun createWorkList(): List<AnalyzerTask> {
         var list = mutableListOf<AnalyzerTask>()
         list.add(AnalyzerTask("0.0001"))
         return list
@@ -28,7 +50,7 @@ class AnalyzerWorkFinder(val collector_url: String) : WorkFinder<AnalyzerTask> {
         runBlocking {
             try {
                 // Send GET request
-                val response: HttpResponse = client.get("http://$collector_url/check-status")
+                val response: HttpResponse = client.get("http://$collector_url/health-check")
                 // Check if response contains the text
                 val body: String = response.bodyAsText()
                 status = body.contains("Ready")
