@@ -18,6 +18,8 @@ class AnalyzerWorkerTest {
         dbTemplate.execute("delete from cluster")
     }
 
+    // This is an integration test
+    // It tests the connections between the collector workers, analyzer workers, database, and the real data API
     @Test
     fun testExecute() {
         val worker = CollectorWorker(collectorGateway)

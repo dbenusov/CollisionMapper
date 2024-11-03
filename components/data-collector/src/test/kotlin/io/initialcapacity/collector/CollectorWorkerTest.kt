@@ -16,6 +16,8 @@ class CollectorWorkerTest {
         dbTemplate.execute("delete from $tableName")
     }
 
+    // This is an integration test
+    // It tests the connections between the workers, database, and the mocked data API
     @Test
     fun testExecute() {
         val expected_data = listOf(CollisionData("10018", 32.52434444F, -86.672119440F, "2015"), CollisionData("10124", 32.58379167F, -86.464288890F, "2014"), CollisionData("10318", 32.64268056F, -86.756822220F, "2014"))
@@ -24,6 +26,7 @@ class CollectorWorkerTest {
         worker.execute(task)
 
         val all_data = gateway.getAll()
+        assertEquals(all_data.size, expected_data.size)
         for (expected_entry in expected_data) {
             var found = false
             for (data in all_data) {

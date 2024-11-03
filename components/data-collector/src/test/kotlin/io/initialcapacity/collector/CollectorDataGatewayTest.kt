@@ -15,6 +15,8 @@ class CollectorDataGatewayTest {
         dbTemplate.execute("delete from $tableName")
     }
 
+    // This is a unit test
+    // We test only the database connection here
     @Test
     fun testSave() {
         val expected_data = CollisionData("12344321", 37.36760F, -122.02515F, "2024")
@@ -38,69 +40,5 @@ class CollectorDataGatewayTest {
         val list = gateway.getAll()
         assertEquals(expected_data, list[0])
         assertEquals(expected_data1, list[1])
-
-        val data2 = dbTemplate
-            .queryOne(
-                    "SELECT " +
-                            "case_number, " +
-                            "ST_ClusterDBSCAN(location::geometry, eps => 0.1, minpoints => 1) over () AS cluster " +
-                        "FROM data")
-            {
-                do {
-                    println(it.getString("case_number") + " " + it.getString("cluster"))
-                } while (it.next())
-            }
-
-        val data3 = dbTemplate
-            .queryOne(
-                "SELECT " +
-                    "data.*, " +
-                    "ST_ClusterWithinWin(location::geometry, 0.1) over () AS cluster " +
-                "FROM data")
-            {
-                do {
-                    println(it.getString("case_number") + " " + it.getString("cluster"))
-                } while (it.next())
-            }
-
-        val data4 = dbTemplate
-            .queryOne(
-                "WITH clustered_data AS (\n" +
-                        "    SELECT \n" +
-                        "        data.*,\n" +
-                        "        ST_ClusterWithinWin(location::geometry, 0.1) OVER () AS cluster\n" +
-                        "    FROM data\n" +
-                        ")\n" +
-                        "SELECT\n" +
-                        "    cluster,\n" +
-                        "    ST_AsText(ST_Collect(location::geometry)) AS geom_collection,\n" +
-                        "    array_agg(clustered_data.*) AS data_items\n" +
-                        "FROM clustered_data\n" +
-                        "GROUP BY cluster;")
-            {
-                do {
-                    println(it.getString("cluster") + " " + it.getString("geom_collection") + it.getString("data_items"))
-                } while (it.next())
-            }
-
-        val data5 = dbTemplate
-            .queryOne(
-                "WITH clustered_data AS (\n" +
-                        "    SELECT \n" +
-                        "        data.*,\n" +
-                        "        ST_ClusterWithinWin(location::geometry, 0.1) OVER () AS cluster_num\n" +
-                        "    FROM data\n" +
-                        ")\n" +
-                        "SELECT\n" +
-                        "    cluster_num,\n" +
-                        "    ST_AsText(ST_Collect(location::geometry)) AS geom_collection,\n" +
-                        "    array_agg(id) AS data_keys\n" +
-                        "FROM clustered_data\n" +
-                        "GROUP BY cluster_num;")
-            {
-                do {
-                    println(it.getString("cluster_num") + " " + it.getString("geom_collection") + it.getString("data_keys"))
-                } while (it.next())
-            }
     }
 }
