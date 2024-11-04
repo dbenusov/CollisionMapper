@@ -66,12 +66,20 @@ fully initialized. Technically, only the postgres container is needed, but, bett
    Observe the list of stored elements! If nothing appears please wait a minute or so and refresh the page. Check the 
 Docker logs and make sure that the collector/analyzer have finished processing their data batches.
 
-1. To view a preliminary version of the collision map go to
+1. To view the collision map go to the url below. The red circles are collision hotspots. Click on one to see the number
+of collisions in that area!
     ```
      http://127.0.0.1:8888/
     ```
-   This is very much a work in progress. Move around the map by zooming in and panning. There are clusters of accidents 
-in Alabama and Alaska indicated by the red circles.
+
+1. To view the server metrics go to the curl below. Be sure to execute some queries in the search bar. By default, nothing is displayed!
+In the target tab you will see the servers being monitored. In the graph tab you can view the scraped data, just make sure
+to execute a query in the search bar! A good thing to query is `requests`, which shows the number of requests made to the
+`basic-server` API that returns the circle locations. Type `requests` into the search bar and press execute to see the data!
+Trying panning around the screen in the map for a while and see it affect the returned values.
+    ```
+     http://127.0.0.1:9090/
+    ```
 
 1.  Clean-up all Docker containers and data.
     ```bash

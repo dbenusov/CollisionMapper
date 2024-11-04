@@ -22,6 +22,7 @@ class CollectorWorker(val gateway: CollectorDataGateway, override val name: Stri
             logger.info("starting data collection.")
 
             val collisions = source.getCollisionData(task.queryUrl)
+            task.metrics.collisions = collisions.size
             for (collision in collisions)
                 gateway.save(collision)
 

@@ -8,6 +8,7 @@ val ktorVersion: String by project
 val exposedVersion: String by project
 val postgresVersion: String by project
 val hikariVersion: String by project
+val prometheusVersion: String by project
 
 dependencies {
     implementation("org.slf4j:slf4j-simple:2.0.7")
@@ -26,6 +27,9 @@ dependencies {
     implementation("org.postgresql:postgresql:$postgresVersion")
     implementation("io.ktor:ktor-client-json:$ktorVersion")
     implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
+    implementation("io.prometheus:simpleclient:$prometheusVersion")
+    implementation("io.prometheus:simpleclient_hotspot:$prometheusVersion")
+    implementation("io.prometheus:simpleclient_common:$prometheusVersion")
 
     testImplementation("io.ktor:ktor-server-tests-jvm:$ktorVersion")
     testImplementation(project(":components:test-database-support"))

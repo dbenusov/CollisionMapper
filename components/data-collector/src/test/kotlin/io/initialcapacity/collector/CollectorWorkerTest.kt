@@ -4,6 +4,7 @@ import org.junit.Before
 import kotlin.math.exp
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNotEquals
 
 class CollectorWorkerTest {
     private val dbName = "collisions"
@@ -34,7 +35,8 @@ class CollectorWorkerTest {
                 if (data.case_number == expected_entry.case_number)
                     found = true
             }
-            assert(found) { "Missing entry ${expected_entry.toString()}" }
+            assert(found) { "Missing entry ${expected_entry.case_number}" }
         }
+        assertNotEquals(task.metrics.collisions, 0)
     }
 }

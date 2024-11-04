@@ -1,0 +1,11 @@
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: 'docker_containers'
+    metrics_path: '/metrics'  # Adjust if needed
+    static_configs:
+      - targets:
+          - 'basic-server:8888'
+          - 'data-analyzer:8887'  # Replace with the actual container name and port
+          - 'data-collector:8886'   # Add other containers as needed

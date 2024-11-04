@@ -28,8 +28,8 @@ class AnalyzerWorker(val gateway: AnalyzerDataGateway, override val name: String
                     gateway.updateCollision(collision, id);
                 }
                 task.metrics.processed_clusters++
+                task.metrics.time = time_source.markNow() - start
             }
-            task.metrics.time = time_source.markNow() - start
             logger.info("completed data analysis.")
         }
     }

@@ -51,5 +51,16 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+  prometheus:
+    image: prom/prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./metrics/prometheus.yml:/etc/prometheus/prometheus.yml
+    depends_on:
+      - basic-server
+      - data-analyzer
+      - data-collector
+
 volumes:
   postgres-data:

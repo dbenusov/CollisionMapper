@@ -14,6 +14,9 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.Routing
 import io.ktor.server.routing.get
 import io.ktor.util.pipeline.*
+import io.prometheus.client.CollectorRegistry
+import io.prometheus.client.Gauge
+import io.prometheus.client.exporter.common.TextFormat
 import kotlinx.serialization.json.buildJsonArray
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
@@ -22,6 +25,19 @@ import org.slf4j.LoggerFactory
 import kotlin.time.DurationUnit
 
 private val work_finder = CollectorWorkFinder()
+
+// Define gauges for collisions and duration, with labels
+val collisionsGauge = Gauge.build()
+    .name("collisions_total")
+    .help("Total number of collisions")
+    .labelNames("start_year", "end_year")  // Define labels
+    .register()
+
+val durationGauge = Gauge.build()
+    .name("operation_duration_ms")
+    .help("Duration of the operation in milliseconds")
+    .labelNames("start_year", "end_year")  // Define labels
+    .register()
 
 fun Application.module(gateway: CollectorDataGateway) {
     install(FreeMarker) {
@@ -49,17 +65,15 @@ fun Application.module(gateway: CollectorDataGateway) {
 
         get("metrics") {
             val metrics = work_finder.getMetrics()
-            val jsonArray = buildJsonArray {
-                for (metric in metrics) {
-                    add(buildJsonObject {
-                        put("start_year", metric.start_year)
-                        put("end_year", metric.end_year)
-                        put("collisions", metric.collisions)
-                        put("duration_ms", metric.time.toString(DurationUnit.MILLISECONDS))
-                    })
-                }
+            for (metric in metrics) {
+                collisionsGauge.labels(metric.start_year, metric.end_year).set(metric.collisions.toDouble())
+                durationGauge.labels(metric.start_year, metric.end_year).set(metric.time.toDouble(DurationUnit.MILLISECONDS))
             }
-            call.respond(jsonArray.toString())
+
+            // Expose metrics in Prometheus format
+            call.respondTextWriter(ContentType.Text.Plain) {
+                TextFormat.write004(this, CollectorRegistry.defaultRegistry.metricFamilySamples())
+            }
         }
         staticResources("/static/styles", "static/styles")
         staticResources("/static/images", "static/images")

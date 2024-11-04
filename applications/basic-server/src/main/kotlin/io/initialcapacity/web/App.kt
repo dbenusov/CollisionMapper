@@ -24,7 +24,11 @@ import io.ktor.util.pipeline.PipelineContext
 import org.slf4j.LoggerFactory
 import java.util.*
 import io.ktor.server.plugins.cors.*
+import io.prometheus.client.CollectorRegistry
+import io.prometheus.client.Gauge
+import io.prometheus.client.exporter.common.TextFormat
 import kotlinx.serialization.json.*
+import java.util.concurrent.ConcurrentLinkedQueue
 import kotlin.time.DurationUnit
 import kotlin.time.TimeSource
 
@@ -34,10 +38,29 @@ private val localUrl = "http://localhost:$port"
 private val googleProjectId = System.getenv("PROJECT_NUMBER") ?: ""
 private val googleServiceName = System.getenv("K_SERVICE") ?: ""
 private val googleProjectRegion = System.getenv("PROJECT_REGION") ?: ""
+private var requests = 0
 
 // Metrics
 private val time_source = TimeSource.Monotonic
-private val metric_buffer: Queue<DisplayMetrics> = LinkedList<DisplayMetrics>()
+private val metric_buffer: Queue<DisplayMetrics> = ConcurrentLinkedQueue<DisplayMetrics>()
+
+val requestGauge = Gauge.build()
+    .name("requests")
+    .help("Number of requests since the last scrape")
+    .register()
+
+val durationGauge = Gauge.build()
+    .name("operation_duration_ms")
+    .help("Duration of the operation in milliseconds")
+    .labelNames("clusters")  // Define labels
+    .register()
+
+// Function to create a copy of the queue safely
+fun copyQueue(): Queue<DisplayMetrics> {
+    synchronized(metric_buffer) {
+        return metric_buffer
+    }
+}
 
 fun Application.module(gateway: DisplayDataGateway) {
     logger.info("starting the app")
@@ -74,6 +97,7 @@ fun Application.module(gateway: DisplayDataGateway) {
         staticResources("/static/html", "static/html")
 
         get("/json-data/{lower-lat}/{lower-long}/{upper-lat}/{upper-long}") {
+            requests++
             val start = time_source.markNow()
             val lower_lat = call.parameters["lower-lat"]
             val lower_long = call.parameters["lower-long"]
@@ -85,21 +109,24 @@ fun Application.module(gateway: DisplayDataGateway) {
             }
             val data = jsondata(gateway, lower_lat, lower_long, upper_lat, upper_long)
             call.respond(data.first.toString())
-            metric_buffer.add(DisplayMetrics(data.second, time_source.markNow() - start))
-            if (metric_buffer.size >= 10)
-                metric_buffer.remove()
+            val q = copyQueue()
+            q.add(DisplayMetrics(data.second, time_source.markNow() - start))
+            if (q.size >= 10)
+                q.remove()
         }
 
         get("/metrics") {
-            val jsonArray = buildJsonArray {
-                for (metric in metric_buffer) {
-                    add(buildJsonObject {
-                        put("clusters", metric.clusters)
-                        put("duration_ms", metric.time.toString(DurationUnit.MILLISECONDS))
-                    })
-                }
+            val q = copyQueue()
+            for (metric in q) {
+                durationGauge.labels(metric.clusters.toString()).set(metric.time.toDouble(DurationUnit.MILLISECONDS))
             }
-            call.respond(jsonArray.toString())
+            requestGauge.set(requests.toDouble())
+            requests = 0
+
+            // Expose metrics in Prometheus format
+            call.respondTextWriter(ContentType.Text.Plain) {
+                TextFormat.write004(this, CollectorRegistry.defaultRegistry.metricFamilySamples())
+            }
         }
 
         get("/ping") {

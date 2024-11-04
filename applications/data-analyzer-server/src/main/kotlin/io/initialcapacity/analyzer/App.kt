@@ -16,6 +16,9 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.Routing
 import io.ktor.server.routing.get
 import io.ktor.util.pipeline.*
+import io.prometheus.client.CollectorRegistry
+import io.prometheus.client.Gauge
+import io.prometheus.client.exporter.common.TextFormat
 import kotlinx.serialization.json.*
 import org.slf4j.LoggerFactory
 import java.util.*
@@ -23,6 +26,12 @@ import kotlin.time.DurationUnit
 
 private val collector_url = System.getenv("COLLECTOR_URL") ?: "localhost:8886"
 private val work_finder = AnalyzerWorkFinder(collector_url)
+
+val durationGauge = Gauge.build()
+    .name("operation_duration_ms")
+    .help("Duration of the operation in milliseconds")
+    .labelNames("available_clusters", "processed_clusters")  // Define labels
+    .register()
 
 fun Application.module(gateway: AnalyzerDataGateway) {
     install(FreeMarker) {
@@ -47,6 +56,8 @@ fun Application.module(gateway: AnalyzerDataGateway) {
             )
             call.respond(FreeMarkerContent("index.ftl", map))
         }
+        staticResources("/static/styles", "static/styles")
+        staticResources("/static/images", "static/images")
 
         get("/json-data") {
             call.respond(jsondata(gateway).toString())
@@ -61,19 +72,15 @@ fun Application.module(gateway: AnalyzerDataGateway) {
 
         get("metrics") {
             val metrics = work_finder.getMetrics()
-            val jsonArray = buildJsonArray {
-                for (metric in metrics) {
-                    add(buildJsonObject {
-                        put("available_clusters", metric.available_clusters)
-                        put("processed_clusters", metric.processed_clusters)
-                        put("duration_ms", metric.time.toString(DurationUnit.MILLISECONDS))
-                    })
-                }
+            for (metric in metrics) {
+                durationGauge.labels(metric.available_clusters.toString(), metric.processed_clusters.toString()).set(metric.time.toDouble(DurationUnit.MILLISECONDS))
             }
-            call.respond(jsonArray.toString())
+
+            // Expose metrics in Prometheus format
+            call.respondTextWriter(ContentType.Text.Plain) {
+                TextFormat.write004(this, CollectorRegistry.defaultRegistry.metricFamilySamples())
+            }
         }
-        staticResources("/static/styles", "static/styles")
-        staticResources("/static/images", "static/images")
     }
     val scheduler = WorkScheduler(work_finder, mutableListOf(AnalyzerWorker(gateway)), 30)
     scheduler.start()
