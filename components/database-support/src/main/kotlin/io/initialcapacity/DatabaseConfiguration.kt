@@ -15,7 +15,8 @@ class DatabaseConfiguration() {
         jdbcUrl = url
         username = database_user
         password = database_password
-        addDataSourceProperty("ssl", use_ssl.toString())
+        if (use_ssl)
+            addDataSourceProperty("sslmode", "require")
     }
     private val ds = HikariDataSource(config)
 
