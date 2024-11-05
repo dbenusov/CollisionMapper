@@ -147,7 +147,7 @@ jobs:
             --allow-unauthenticated \
             --port=8080 \
             --service-account=320300059816-compute@developer.gserviceaccount.com \
-            --set-env-vars='APP=opt/applications/basic-server.jar,POSTGRES_USER=${{ env.POSTGRES_USER }},POSTGRES_PASSWORD=${{ env.POSTGRES_PASSWORD }},USE_SSL=true,DATABASE_HOST=host.docker.internal' \
+            --set-env-vars='APP=opt/applications/basic-server.jar,POSTGRES_USER=${{ env.POSTGRES_USER }},POSTGRES_PASSWORD=${{ env.POSTGRES_PASSWORD }},USE_SSL=true' \
             --region=us-central1 \
             --project=collision-mappter \
             --vpc-connector=projects/collision-mappter/locations/us-central1/connectors/collision-mapper \
@@ -182,7 +182,7 @@ jobs:
             --allow-unauthenticated \
             --port=8080 \
             --service-account=320300059816-compute@developer.gserviceaccount.com \
-            --set-env-vars='APP=opt/applications/data-analyzer-server.jar,POSTGRES_USER=${{ env.POSTGRES_USER }},POSTGRES_PASSWORD=${{ env.POSTGRES_PASSWORD }},USE_SSL=true,DATABASE_HOST=host.docker.internal,COLLECTOR_URL=https://data-collector-320300059816.us-central1.run.app' \
+            --set-env-vars='APP=opt/applications/data-analyzer-server.jar,POSTGRES_USER=${{ env.POSTGRES_USER }},POSTGRES_PASSWORD=${{ env.POSTGRES_PASSWORD }},USE_SSL=true,COLLECTOR_URL=https://data-collector-320300059816.us-central1.run.app' \
             --region=us-central1 \
             --project=collision-mappter \
             --vpc-connector=projects/collision-mappter/locations/us-central1/connectors/collision-mapper \
@@ -217,7 +217,7 @@ jobs:
             --allow-unauthenticated \
             --port=8080 \
             --service-account=320300059816-compute@developer.gserviceaccount.com \
-            --set-env-vars='APP=opt/applications/data-collector-server.jar,POSTGRES_USER=${{ env.POSTGRES_USER }},POSTGRES_PASSWORD=${{ env.POSTGRES_PASSWORD }},USE_SSL=true,DATABASE_HOST=host.docker.internal' \
+            --set-env-vars='APP=opt/applications/data-collector-server.jar,POSTGRES_USER=${{ env.POSTGRES_USER }},POSTGRES_PASSWORD=${{ env.POSTGRES_PASSWORD }},USE_SSL=true' \
             --region=us-central1 \
             --project=collision-mappter \
             --vpc-connector=projects/collision-mappter/locations/us-central1/connectors/collision-mapper \

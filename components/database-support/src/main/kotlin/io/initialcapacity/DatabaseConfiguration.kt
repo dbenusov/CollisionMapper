@@ -15,8 +15,12 @@ class DatabaseConfiguration() {
         jdbcUrl = url
         username = database_user
         password = database_password
-        if (use_ssl)
+        if (use_ssl) {
             addDataSourceProperty("sslmode", "require")
+            // Set Cloud SQL instance as a property
+            addDataSourceProperty("cloudSqlInstance", "your-project-id:your-region:your-instance-name")
+            addDataSourceProperty("socketFactory", "com.google.cloud.sql.postgres.SocketFactory")
+        }
     }
     private val ds = HikariDataSource(config)
 
