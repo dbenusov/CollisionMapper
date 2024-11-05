@@ -112,13 +112,13 @@ jobs:
           # Use Docker `latest` tag convention
           [ "$VERSION" == "main" ] && VERSION=latest
           echo IMAGE_ID=$IMAGE_ID
-          echo VERSION=$VERSION
 
           # Use the commit SHA for a unique image tag
           IMAGE_TAG=${{ github.sha }}
           
           # You can also limit the tag length if needed
           SHORT_IMAGE_TAG=$(echo "$IMAGE_TAG" | cut -c1-8)  # Use the first 8 characters
+          echo TAG=$SHORT_IMAGE_TAG
 
           docker tag image $IMAGE_ID:$SHORT_IMAGE_TAG
           docker push $IMAGE_ID:$SHORT_IMAGE_TAG
@@ -136,10 +136,14 @@ jobs:
       - name: 'Deploy'
         id: 'deploy'
         run: |-
+          # Use the commit SHA for a unique image tag
           IMAGE_TAG=${{ github.sha }}
+          
+          # You can also limit the tag length if needed
+          SHORT_IMAGE_TAG=$(echo "$IMAGE_TAG" | cut -c1-8)  # Use the first 8 characters
           gcloud components install beta --quiet
           gcloud run deploy basic-server \
-            --image=docker.io/flyingmonkeys1996/collision-mapper:$IMAGE_TAG \
+            --image=docker.io/flyingmonkeys1996/collision-mapper:$SHORT_IMAGE_TAG \
             --allow-unauthenticated \
             --port=8080 \
             --service-account=320300059816-compute@developer.gserviceaccount.com \
@@ -167,10 +171,14 @@ jobs:
       - id: 'gcloud'
         name: 'gcloud'
         run: |-
+          # Use the commit SHA for a unique image tag
           IMAGE_TAG=${{ github.sha }}
+          
+          # You can also limit the tag length if needed
+          SHORT_IMAGE_TAG=$(echo "$IMAGE_TAG" | cut -c1-8)  # Use the first 8 characters
           gcloud components install beta --quiet
           gcloud run deploy data-analyzer \
-            --image=docker.io/flyingmonkeys1996/collision-mapper:$IMAGE_TAG \
+            --image=docker.io/flyingmonkeys1996/collision-mapper:$SHORT_IMAGE_TAG \
             --allow-unauthenticated \
             --port=8080 \
             --service-account=320300059816-compute@developer.gserviceaccount.com \
@@ -198,10 +206,14 @@ jobs:
       - id: 'gcloud'
         name: 'gcloud'
         run: |-
+          # Use the commit SHA for a unique image tag
           IMAGE_TAG=${{ github.sha }}
+          
+          # You can also limit the tag length if needed
+          SHORT_IMAGE_TAG=$(echo "$IMAGE_TAG" | cut -c1-8)  # Use the first 8 characters
           gcloud components install beta --quiet
           gcloud run deploy data-collector \
-            --image=docker.io/flyingmonkeys1996/collision-mapper:$IMAGE_TAG \
+            --image=docker.io/flyingmonkeys1996/collision-mapper:$SHORT_IMAGE_TAG \
             --allow-unauthenticated \
             --port=8080 \
             --service-account=320300059816-compute@developer.gserviceaccount.com \
