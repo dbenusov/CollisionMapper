@@ -22,6 +22,8 @@ import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import java.util.*
 import org.slf4j.LoggerFactory
+import java.net.HttpURLConnection
+import java.net.URL
 import kotlin.time.DurationUnit
 
 private val work_finder = CollectorWorkFinder()
@@ -78,6 +80,7 @@ fun Application.module(gateway: CollectorDataGateway) {
         staticResources("/static/styles", "static/styles")
         staticResources("/static/images", "static/images")
     }
+
     val scheduler = WorkScheduler<CollectorTask>(work_finder, mutableListOf(CollectorWorker(gateway)), 30)
     scheduler.start()
 }
@@ -101,7 +104,27 @@ private fun PipelineContext<Unit, ApplicationCall>.data(gateway: CollectorDataGa
 
 private val logger = LoggerFactory.getLogger("main")
 
+fun testFetchRequest() {
+    val url = URL("https://jsonplaceholder.typicode.com/todos/1")
+    val connection = url.openConnection() as HttpURLConnection
+    connection.requestMethod = "GET"
+
+    try {
+        val responseCode = connection.responseCode
+        logger.info("Response Code: $responseCode")
+        if (responseCode == HttpURLConnection.HTTP_OK) {
+            val response = connection.inputStream.bufferedReader().use { it.readText() }
+            logger.info("Response: $response")
+        } else {
+            logger.info("Failed to fetch data. Response Code: $responseCode")
+        }
+    } finally {
+        connection.disconnect()
+    }
+}
+
 fun main() {
+    testFetchRequest()
     val database = DatabaseConfiguration()
     val dbTemplate = DatabaseTemplate(database.db)
     val gateway = CollectorDataGateway(dbTemplate)
