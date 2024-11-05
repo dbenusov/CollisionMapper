@@ -144,6 +144,8 @@ jobs:
           gcloud components install beta --quiet
           gcloud run deploy basic-server \
             --image=docker.io/flyingmonkeys1996/collision-mapper:$SHORT_IMAGE_TAG \
+            --cpu=4 \
+            --memory=2Gi \
             --allow-unauthenticated \
             --port=8080 \
             --service-account=320300059816-compute@developer.gserviceaccount.com \
@@ -179,6 +181,8 @@ jobs:
           gcloud components install beta --quiet
           gcloud run deploy data-analyzer \
             --image=docker.io/flyingmonkeys1996/collision-mapper:$SHORT_IMAGE_TAG \
+            --cpu=4 \
+            --memory=2Gi \
             --allow-unauthenticated \
             --port=8080 \
             --service-account=320300059816-compute@developer.gserviceaccount.com \
@@ -214,6 +218,8 @@ jobs:
           gcloud components install beta --quiet
           gcloud run deploy data-collector \
             --image=docker.io/flyingmonkeys1996/collision-mapper:$SHORT_IMAGE_TAG \
+            --cpu=4 \
+            --memory=2Gi \
             --allow-unauthenticated \
             --port=8080 \
             --service-account=320300059816-compute@developer.gserviceaccount.com \
