@@ -16,7 +16,7 @@ class CollectorWorkFinder : WorkFinder<CollectorTask> {
                 list.add(CollectorTask(
                     "/FARSData/GetFARSData?dataset=Accident&FromYear=$start_year&ToYear=$end_year&state=$state&format=json",
                     false,
-                    CollectorMetrics(start_year.toString(), end_year.toString()))
+                    CollectorMetrics(start_year.toString(), end_year.toString(), state.toString()))
                 )
             }
         }

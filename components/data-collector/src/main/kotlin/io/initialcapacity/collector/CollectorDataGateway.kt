@@ -14,10 +14,17 @@ class CollectorDataGateway(private val dbTemplate: DatabaseTemplate) {
         return list.toList()
     }
 
-    fun exists(case_number: String): Boolean {
+    fun saveProcessed(case_year: String, state: String) {
+        dbTemplate.execute(
+            //language=SQL
+            "insert into processed_data (case_year, state) values (?, ?);", case_year, state
+        )
+    }
+
+    fun isProcessed(case_year: String, state: String): Boolean {
         val id = dbTemplate.queryOne(
             //language=SQL
-            "select id from data where case_number = '${case_number}'"
+            "select id from processed_data where case_year = '${case_year}' AND state = '${state}'"
         ) {
             it.getString("id")
         }

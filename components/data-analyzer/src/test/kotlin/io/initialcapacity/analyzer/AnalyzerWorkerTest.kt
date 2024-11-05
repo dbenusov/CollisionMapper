@@ -16,6 +16,7 @@ class AnalyzerWorkerTest {
     fun setUp() {
         dbTemplate.execute("delete from data")
         dbTemplate.execute("delete from cluster")
+        dbTemplate.execute("delete from processed_data")
     }
 
     // This is an integration test
@@ -23,7 +24,7 @@ class AnalyzerWorkerTest {
     @Test
     fun testExecute() {
         val worker = CollectorWorker(collectorGateway)
-        val task = CollectorTask("/crashes/GetCrashesByLocation?fromCaseYear=2014&toCaseYear=2015&state=1&county=1&format=json", false, CollectorMetrics("1234", "1234"))
+        val task = CollectorTask("/crashes/GetCrashesByLocation?fromCaseYear=2014&toCaseYear=2015&state=1&county=1&format=json", false, CollectorMetrics("1234", "1234", "1"))
         worker.execute(task)
 
         val worker1 = AnalyzerWorker(gateway)

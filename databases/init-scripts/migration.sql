@@ -15,4 +15,10 @@ CREATE TABLE IF NOT EXISTS data (
    location GEOGRAPHY(POINT)
 );
 
+CREATE TABLE IF NOT EXISTS processed_data (
+   id SERIAL PRIMARY KEY,
+   case_year VARCHAR(100),
+   state VARCHAR(100)
+);
+
 CREATE INDEX ON data USING gist(location);

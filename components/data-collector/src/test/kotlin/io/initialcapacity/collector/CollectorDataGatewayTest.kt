@@ -35,11 +35,10 @@ class CollectorDataGatewayTest {
     // We test only the database connection here
     @Test
     fun testExists() {
-        val expected_data = CollisionData("12344321", 37.36760F, -122.02515F, "2024")
-        expected_data.id = gateway.save(expected_data)
+        gateway.saveProcessed("1234", "4321")
 
-        assertTrue(gateway.exists("12344321"))
-        assertFalse(gateway.exists("abcd123"))
+        assertTrue(gateway.isProcessed("1234", "4321"))
+        assertFalse(gateway.isProcessed("4321", "9876"))
     }
 
     @Test
