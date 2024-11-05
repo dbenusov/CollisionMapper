@@ -53,8 +53,8 @@ running before starting the system tests.
     The applications need to wait for the database container to issue a health report before starting. This takes about 
 30 seconds, please be patient before attempting to access the data pages.
 
-1. PLEASE WAIT TO RUN THIS, THE DOCKERIZED APPLICATIONS MUST BE READY. Runs the system tests, when the system is 
-fully initialized. Technically, only the postgres container is needed, but, better safe than sorry.
+1. PLEASE WAIT TO RUN THIS, THE DATABASE MUST BE READY. Check the Docker logs and verify the database is accepting
+connections. Runs the system tests.
     ```bash
     ./gradlew build
     ```
@@ -67,7 +67,7 @@ fully initialized. Technically, only the postgres container is needed, but, bett
 Docker logs and make sure that the collector/analyzer have finished processing their data batches.
 
 1. To view the collision map go to the url below. The red circles are collision hotspots. Click on one to see the number
-of collisions in that area!
+of collisions in that area! Zoom in and out to see the collisions change depending on your view.
     ```
      http://127.0.0.1:8888/
     ```

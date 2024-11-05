@@ -71,7 +71,7 @@ async function initMap() {
     mapId: "DEMO_MAP_ID",
   });
 
-  map.addListener("center_changed", () => {
+  map.addListener("zoom_changed", () => {
     updateClusters();
   });
 
