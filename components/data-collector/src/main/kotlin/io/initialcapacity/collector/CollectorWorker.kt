@@ -23,6 +23,11 @@ class CollectorWorker(val gateway: CollectorDataGateway, override val name: Stri
 
             val collisions = source.getCollisionData(task.queryUrl)
             task.metrics.collisions = collisions.size
+            if (collisions.isNotEmpty() && gateway.exists(collisions[0].case_number)) {
+                logger.info("data already processed")
+                return@runBlocking
+            }
+
             for (collision in collisions)
                 gateway.save(collision)
 

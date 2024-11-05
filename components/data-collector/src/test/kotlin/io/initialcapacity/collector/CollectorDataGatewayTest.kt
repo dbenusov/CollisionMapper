@@ -1,8 +1,10 @@
 package io.initialcapacity.collector
 
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 
 class CollectorDataGatewayTest {
     private val dbName = "collisions"
@@ -27,6 +29,17 @@ class CollectorDataGatewayTest {
                 CollisionData(it.getString("case_number"), it.getFloat("st_y"), it.getFloat("st_x"), it.getString("date_year"), it.getString("id"))
             }
         assertEquals(expected_data, data)
+    }
+
+    // This is a unit test
+    // We test only the database connection here
+    @Test
+    fun testExists() {
+        val expected_data = CollisionData("12344321", 37.36760F, -122.02515F, "2024")
+        expected_data.id = gateway.save(expected_data)
+
+        assertTrue(gateway.exists("12344321"))
+        assertFalse(gateway.exists("abcd123"))
     }
 
     @Test

@@ -14,6 +14,16 @@ class CollectorDataGateway(private val dbTemplate: DatabaseTemplate) {
         return list.toList()
     }
 
+    fun exists(case_number: String): Boolean {
+        val id = dbTemplate.queryOne(
+            //language=SQL
+            "select id from data where case_number = '${case_number}'"
+        ) {
+            it.getString("id")
+        }
+        return id != null
+    }
+
     fun get(id: String) : CollisionData? {
         return dbTemplate.queryOne(
             //language=SQL

@@ -12,6 +12,11 @@ class AnalyzerWorker(val gateway: AnalyzerDataGateway, override val name: String
     private val logger = LoggerFactory.getLogger(this.javaClass)
 
     override fun execute(task: AnalyzerTask) {
+        if (gateway.getAll().size != 0) {
+            logger.info("Data already processed")
+            return
+        }
+
         task.in_process = true
         start = time_source.markNow()
         runBlocking {
