@@ -24,7 +24,7 @@ import org.slf4j.LoggerFactory
 import java.util.*
 import kotlin.time.DurationUnit
 
-private val collector_url = System.getenv("COLLECTOR_URL") ?: "localhost:8886"
+private val collector_url = System.getenv("COLLECTOR_URL") ?: "http://localhost:8886"
 private val work_finder = AnalyzerWorkFinder(collector_url)
 
 val durationGauge = Gauge.build()

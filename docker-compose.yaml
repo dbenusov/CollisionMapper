@@ -35,7 +35,7 @@ services:
       PORT: 8887
       APP: /opt/applications/data-analyzer-server.jar
       DATABASE_HOST: "host.docker.internal"
-      COLLECTOR_URL: "host.docker.internal:8886"
+      COLLECTOR_URL: "http://host.docker.internal:8886"
     depends_on:
       postgres:
         condition: service_healthy

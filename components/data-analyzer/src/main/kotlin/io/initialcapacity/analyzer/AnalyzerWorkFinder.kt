@@ -50,7 +50,7 @@ class AnalyzerWorkFinder(val collector_url: String) : WorkFinder<AnalyzerTask> {
         runBlocking {
             try {
                 // Send GET request
-                val response: HttpResponse = client.get("http://$collector_url/health-check")
+                val response: HttpResponse = client.get("$collector_url/health-check")
                 // Check if response contains the text
                 val body: String = response.bodyAsText()
                 status = body.contains("Ready")
