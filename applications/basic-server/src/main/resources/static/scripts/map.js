@@ -11,6 +11,7 @@ let circle_data;
 let circles;
 let currentUrl = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port;
 let infoWindow;
+let lastUpdate = Date.now()
 
 function clearMap() {
   for (let i = 0; i < 10; i++) {
@@ -25,6 +26,13 @@ function calculateRadius() {
 }
 
 function updateClusters() {
+    let update = Date.now();
+    if (update - lastUpdate < 300) {
+      return;
+    }
+
+    lastUpdate = update;
+
     console.log(currentUrl)
     let bounds = map.getBounds();
     const ne = bounds.getNorthEast();

@@ -10,6 +10,8 @@ class CollectorWorkFinder : WorkFinder<CollectorTask> {
 
     fun createWorkList() : List<CollectorTask> {
         var list = mutableListOf<CollectorTask>()
+        // Replace 2 with 51 to see all states. Be warned it takes a while. Or just go here!
+        // https://basic-server-320300059816.us-central1.run.app
         for (state in 1..2) {
             for (start_year in 2010..2022 step 2) {
                 val end_year = start_year + 1

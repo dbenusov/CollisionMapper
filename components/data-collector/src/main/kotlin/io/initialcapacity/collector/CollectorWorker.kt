@@ -20,6 +20,7 @@ class CollectorWorker(val gateway: CollectorDataGateway, override val name: Stri
         start = time_source.markNow()
         runBlocking {
             logger.info("starting data collection.")
+            logger.info("Processing ${task.metrics.state} Years: ${task.metrics.start_year} - ${task.metrics.end_year}")
 
             val collisions = source.getCollisionData(task.queryUrl)
             task.metrics.collisions = collisions.size
